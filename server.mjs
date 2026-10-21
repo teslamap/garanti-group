@@ -31,7 +31,7 @@ http.createServer(async (req,res) => {
     if(path === '/api/quote') return send(200,calculate(body,catalog));
     if(!process.env.GEMINI_API_KEY) return send(503,{error:'AI ჩატი ჯერ არ არის გააქტიურებული. კონსულტაციისთვის დარეკეთ: +995 598 12 30 30.'});
     if(!Array.isArray(body.messages)||body.messages.length<1||body.messages.length>20||body.messages.some(m=>!['user','assistant'].includes(m.role)||typeof m.content!=='string'||m.content.length>2000)) return send(400,{error:'შეტყობინებების ფორმატი არასწორია.'});
-    const model=process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
+    const model=process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
     const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
       method:'POST',signal:AbortSignal.timeout(30000),
       headers:{'x-goog-api-key':process.env.GEMINI_API_KEY,'Content-Type':'application/json'},
