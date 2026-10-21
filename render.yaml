@@ -13,7 +13,7 @@ services:
         value: 0.0.0.0
       - key: ALLOWED_ORIGIN
         value: https://teslamap.github.io
-      - key: OPENAI_MODEL
-        value: gpt-4.1-mini
-      - key: OPENAI_API_KEY
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash-lite
+      - key: GEMINI_API_KEY
         sync: false
