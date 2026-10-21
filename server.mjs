@@ -42,5 +42,5 @@ http.createServer(async (req,res) => {
       try {quote=calculate(details,catalog);} catch {details.question+='\nფასის დასაზუსტებლად ჩვენი კონსულტანტი დაგეხმარებათ: +995 598 12 30 30.';}
     }
     return send(200,{question:details.question,quote});
-  }catch(error){return send(error instanceof SyntaxError?400:502,{error:error instanceof SyntaxError?'მონაცემები არასწორია.':error.message==='upstream'||error.name==='TimeoutError'||error.message==='empty'?'AI დროებით მიუწვდომელია. სცადეთ ხელახლა ან შეავსეთ ფორმა.':error.message});}
-}).listen(port,'127.0.0.1',()=>console.log(`Preview: http://localhost:${port}`));
+  }catch(error){return send(error instanceof SyntaxError?400:502,{error:error instanceof SyntaxError?'მონაცემები არასწორია.':error.message==='upstream'||error.name==='TimeoutError'||error.message==='empty'?'AI დროებით მიუწვდომელია. გთხოვთ, სცადოთ ხელახლა.':error.message});}
+}).listen(port,process.env.HOST || '127.0.0.1',()=>console.log(`Preview: http://localhost:${port}`));

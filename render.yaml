@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: garanti-group-ai
+    runtime: node
+    plan: free
+    buildCommand: npm install --ignore-scripts --no-audit --no-fund
+    startCommand: node server.mjs
+    healthCheckPath: /api/catalog
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: HOST
+        value: 0.0.0.0
+      - key: ALLOWED_ORIGIN
+        value: https://teslamap.github.io
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_API_KEY
+        sync: false
