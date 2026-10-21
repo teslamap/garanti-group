@@ -1,5 +1,5 @@
 // Set the HTTPS backend URL here when the AI server is deployed.
-const API_BASE = '';
+const API_BASE = 'https://garanti-group-ai.onrender.com';
 const $ = id => document.getElementById(id);
 const messages=[];
 let busy=false;
