@@ -7,7 +7,7 @@ const greeting='გამარჯობა! რით შემიძლია 
 function bubble(text,role='assistant'){const el=document.createElement('div');el.className='chat-bubble '+role;el.textContent=text;$('chatLog').append(el);$('chatLog').scrollTop=$('chatLog').scrollHeight;}
 async function api(path,body){
  if(!API_BASE && location.hostname.endsWith('github.io')){if(path==='/api/catalog')return {ready:false,aiReady:false};throw Error('AI კონსულტანტი ჯერ არ არის ჩართული. მანამდე დაგეხმარებით ტელეფონით: +995 598 12 30 30.');}
- const res=await fetch(API_BASE+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(40000)});
+ const res=await fetch(API_BASE+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(90000)});
  const data=await res.json();if(!res.ok)throw Error(data.error||'მოთხოვნა ვერ შესრულდა.');return data;
 }
 function fail(error){return error.name==='TimeoutError'?'პასუხი დაგვიანდა. გთხოვთ, სცადოთ ხელახლა.':error instanceof TypeError?'კავშირი ვერ დამყარდა. შეგიძლიათ დაგვირეკოთ: +995 598 12 30 30.':error.message;}
