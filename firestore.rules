@@ -1,0 +1,71 @@
+// Auth: in-memory Email/Password admin sessions and anonymous inquiry visitors.
+// site/content: {texts: map <=500, links: map <=200, projects: list <=100}; public marketing only.
+// admins/{uid}: {active: bool}; only Console/Admin SDK can grant or remove roles.
+// orders/{id}: immutable owner/name/phone/address/notes/consent/itemCount/createdAt;
+//                 mutable status/submittedAt during draft submission; status-only admin edits.
+// orders/{id}/items/{0..19}: validated type/material, integer mm dimensions, quantity,
+//                          notes <=1000, up to 3 owner/order/item-scoped Storage paths.
+// submissionLimits/{uid}: lastAt timestamp + orderId, atomic reservation and one/minute per UID.
+// All unspecified paths denied. Public site reads are intentionally requested by this public website.
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true; }
+  function shortText(x, min, max) { return x is string && x.size() >= min && x.size() <= max; }
+  function validContent(d) { return d.keys().hasAll(['texts','links','projects']) && d.keys().hasOnly(['texts','links','projects']) && d.texts is map && d.texts.size() <= 500 && d.links is map && d.links.size() <= 200 && d.projects is list && d.projects.size() <= 100; }
+  function validOrder(d) {
+   return d.keys().hasAll(['ownerUid','name','phone','address','notes','consent','itemCount','createdAt','submittedAt','status']) && d.keys().hasOnly(['ownerUid','name','phone','address','notes','consent','itemCount','createdAt','submittedAt','status'])
+    && shortText(d.ownerUid,1,128) && shortText(d.name,2,100) && shortText(d.phone,7,25) && d.phone.matches('[+0-9 ()-]{7,25}')
+    && shortText(d.address,0,500) && shortText(d.notes,0,2000) && d.consent == true
+    && d.itemCount is int && d.itemCount >= 1 && d.itemCount <= 20 && d.createdAt is timestamp
+    && d.status in ['მზადდება','ახალი','დაკავშირება','მუშავდება','დასრულებული','გაუქმებული']
+    && ((d.status == 'მზადდება' && d.submittedAt == null) || (d.status != 'მზადდება' && d.submittedAt is timestamp));
+  }
+  function validLimit(d) { return d.keys().hasAll(['lastAt','orderId']) && d.keys().hasOnly(['lastAt','orderId']) && d.lastAt == request.time && shortText(d.orderId,20,20) && d.orderId.matches('[A-Za-z0-9]{20}'); }
+  function canReserve(id) {
+   let path = /databases/$(database)/documents/submissionLimits/$(request.auth.uid);
+   return (!exists(path) || request.time >= get(path).data.lastAt + duration.value(60,'s')) && getAfter(path).data.lastAt == request.time && getAfter(path).data.orderId == id;
+  }
+  function validPhoto(p,owner,id,item,number) { return p is string && p == 'orders/'+owner+'/'+id+'/'+item+'/'+number; }
+  function validItem(d,owner,id,item) {
+   return d.keys().hasAll(['type','material','width','height','quantity','notes','photos']) && d.keys().hasOnly(['type','material','width','height','quantity','notes','photos'])
+    && d.type in ['ფანჯარა','კარი','ვიტრაჟი','მოაჯირი','სხვა'] && d.material in ['PVC','ალუმინი','მინა']
+    && d.width is int && d.width >= 1 && d.width <= 20000 && d.height is int && d.height >= 1 && d.height <= 20000
+    && d.quantity is int && d.quantity >= 1 && d.quantity <= 100 && shortText(d.notes,0,1000)
+    && d.photos is list && d.photos.size() <= 3
+    && (d.photos.size()<1 || validPhoto(d.photos[0],owner,id,item,'0'))
+    && (d.photos.size()<2 || validPhoto(d.photos[1],owner,id,item,'1'))
+    && (d.photos.size()<3 || validPhoto(d.photos[2],owner,id,item,'2'));
+  }
+  match /admins/{uid} { allow get: if signedIn() && request.auth.uid == uid; allow list, create, update, delete: if false; }
+  match /site/content { allow get: if true; allow list, delete: if false; allow create, update: if isAdmin() && validContent(request.resource.data); }
+  match /submissionLimits/{uid} {
+   allow read, delete: if false;
+   allow create, update: if signedIn() && uid == request.auth.uid && validLimit(request.resource.data)
+    && (!exists(/databases/$(database)/documents/submissionLimits/$(uid)) || request.time >= resource.data.lastAt + duration.value(60,'s'))
+    && getAfter(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.ownerUid == uid
+    && getAfter(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.createdAt == request.time;
+  }
+  match /orders/{id} {
+   allow get: if isAdmin() || (signedIn() && resource.data.ownerUid == request.auth.uid);
+   allow list: if isAdmin() && request.query.limit <= 100;
+   allow create: if signedIn() && validOrder(request.resource.data) && request.resource.data.ownerUid == request.auth.uid && request.resource.data.createdAt == request.time && request.resource.data.status == 'მზადდება' && canReserve(id);
+   allow update: if validOrder(request.resource.data) && (
+    (signedIn() && resource.data.ownerUid == request.auth.uid && resource.data.status == 'მზადდება' && request.resource.data.status == 'ახალი' && request.resource.data.submittedAt == request.time && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','submittedAt']))
+    || (isAdmin() && resource.data.status != 'მზადდება' && request.resource.data.status != 'მზადდება' && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])));
+   allow delete: if isAdmin();
+   match /items/{item} {
+    allow get, list: if isAdmin();
+    allow create: if signedIn() && item.matches('([0-9]|1[0-9])')
+     && getAfter(/databases/$(database)/documents/orders/$(id)).data.ownerUid == request.auth.uid
+     && getAfter(/databases/$(database)/documents/orders/$(id)).data.status == 'მზადდება'
+     && getAfter(/databases/$(database)/documents/orders/$(id)).data.createdAt == request.time
+     && int(item) < getAfter(/databases/$(database)/documents/orders/$(id)).data.itemCount
+     && validItem(request.resource.data,request.auth.uid,id,item);
+    allow update: if false;
+    allow delete: if isAdmin();
+   }
+  }
+ }
+}

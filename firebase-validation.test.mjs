@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validateInquiry,validateContent} from './firebase-validation.js';
+const inquiry=()=>({name:'Test customer',phone:'+995 555 123456',address:'Tbilisi',notes:'',consent:true,items:[{type:'ფანჯარა',material:'PVC',width:1000,height:1500,quantity:1,notes:'',photos:[]}]});
+test('Firebase inquiry accepts repeated constructions with explicit millimetres',()=>{const data=inquiry();data.items.push({...data.items[0],type:'კარი',height:2200});assert.doesNotThrow(()=>validateInquiry(data))});
+test('Firebase inquiry rejects malformed contacts, missing consent and oversized orders',()=>{for(const mutate of [d=>d.consent=false,d=>d.phone='email',d=>d.name='',d=>d.items=[],d=>d.items=Array(21).fill(d.items[0]),d=>d.items[0].width=-1,d=>d.items[0].quantity=1.2,d=>d.items[0].height=20001,d=>d.items[0].photos=['data:image/svg+xml;base64,PHN2Zz4='],d=>d.items[0].photos=Array(4).fill('data:image/png;base64,YQ==')]){const data=inquiry();mutate(data);assert.throws(()=>validateInquiry(data))}});
+test('Firebase content rejects script links and foreign image hosts',()=>{assert.doesNotThrow(()=>validateContent({texts:{title:'სათაური'},links:{phone:{label:'Phone',href:'tel:+995555123456'}},projects:[]}));assert.throws(()=>validateContent({texts:{},links:{x:{label:'Click',href:'javascript:alert(1)'}},projects:[]}));assert.throws(()=>validateContent({texts:{},links:{},projects:[{title:'Example',category:'PVC',description:'',photos:['https://evil.example/photo.jpg']}]}))});

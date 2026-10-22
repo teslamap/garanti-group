@@ -19,3 +19,7 @@ Excel ჯერ არ მიგვიღია. იმპორტი შეი
 ჩატში გაგზავნილი ტექსტი გადაეცემა OpenAI-ს; ისტორია გვერდის მეხსიერებაში ინახება და განახლებისას იშლება. საბოლოო თანხას AI არ ადგენს — სერვერი ამოწმებს დადასტურებულ პროფილსა და მონაცემებს და ტარიფით ითვლის. AI-ის მიერ ამოკითხული მონაცემები მომხმარებელმა ფორმაში უნდა გადაამოწმოს.
 
 API წყარო: https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses
+
+## Firebase integration
+See [Firebase setup and current activation status](docs/firebase-setup.md). The public website now uses Firebase when configured; the earlier Node CMS setup below is an alternative.
+

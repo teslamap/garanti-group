@@ -1,0 +1,21 @@
+rules_version = '2';
+service firebase.storage {
+ match /b/{bucket}/o {
+  function admin() { return request.auth != null && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)) && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.active == true; }
+  function validImage() { return request.resource.size <= 1500000 && request.resource.contentType.matches('image/(jpeg|png|webp)'); }
+  match /projects/{image} {
+   allow get: if true;
+   allow list: if false;
+   allow create, update: if admin() && validImage();
+   allow delete: if admin();
+  }
+  match /orders/{uid}/{order}/{item}/{photo} {
+   allow get, list: if admin();
+   allow create, update: if request.auth != null && request.auth.uid == uid && item.matches('([0-9]|1[0-9])') && photo.matches('[0-2]') && validImage()
+    && firestore.get(/databases/(default)/documents/orders/$(order)).data.ownerUid == uid
+    && firestore.get(/databases/(default)/documents/orders/$(order)).data.status == 'მზადდება'
+    && firestore.get(/databases/(default)/documents/orders/$(order)/items/$(item)).data.photos[int(photo)] == 'orders/'+uid+'/'+order+'/'+item+'/'+photo;
+   allow delete: if admin();
+  }
+ }
+}

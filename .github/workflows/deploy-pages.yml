@@ -31,7 +31,7 @@ jobs:
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp index.html admin.html upgrade.css upgrade.js site-config.js _site/
+          cp index.html admin.html upgrade.css upgrade.js site-config.js firebase-client.js firebase-validation.js _site/
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
