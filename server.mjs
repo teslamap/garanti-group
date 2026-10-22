@@ -1,3 +1,5 @@
+import {createCMS} from './cms.mjs';
+const cms=createCMS();
 import {generateGemini} from './gemini.mjs';
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -9,6 +11,7 @@ const counts = new Map();
 setInterval(() => counts.clear(), 60000).unref();
 const schema = {type:'object', additionalProperties:false, properties:{profileId:{type:['string','null']},width:{type:['number','null']},height:{type:['number','null']},quantity:{type:['integer','null']},installation:{type:['boolean','null']},question:{type:'string'}}, required:['profileId','width','height','quantity','installation','question']};
 http.createServer(async (req,res) => {
+  if(await cms(req,res))return;
   const headers = {'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
   if(req.headers.origin === origin) Object.assign(headers, {'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET, POST, OPTIONS'});
   function send(status,data) {res.writeHead(status,headers);res.end(JSON.stringify(data));}

@@ -8,7 +8,7 @@ services:
     healthCheckPath: /api/catalog
     envVars:
       - key: NODE_VERSION
-        value: 22
+        value: 24
       - key: HOST
         value: 0.0.0.0
       - key: ALLOWED_ORIGIN
