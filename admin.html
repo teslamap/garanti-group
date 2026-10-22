@@ -1,1 +1,717 @@
-<!doctype html><html lang="ka"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Garanti Group · მართვა</title><link rel="stylesheet" href="upgrade.css?v=firebase-20261022-2"><body class="gg-admin"><a href="./">← საიტზე დაბრუნება</a><h1>Garanti Group · მართვა</h1><p id="admin-status" role="status"></p><form id="login" class="gg-admin-card"><h2>ადმინისტრატორის შესვლა</h2><p>შესვლა Firebase Authentication-ით. საჭიროა ადმინისტრატორის უფლება.</p><label>ელფოსტა<input type="email" name="email" required autocomplete="username"></label><label>პაროლი<input type="password" name="password" required autocomplete="current-password"></label><button>შესვლა</button></form><div id="dashboard" hidden><button id="logout">გასვლა</button><details class="gg-admin-card" open><summary>გვერდის ტექსტები და საკონტაქტო ინფორმაცია</summary><div id="text-editor"></div><button id="save-content">ყველა ცვლილების გამოქვეყნება</button></details><details class="gg-admin-card"><summary>შესრულებული პროექტები</summary><p>ატვირთეთ მხოლოდ რეალურად შესრულებული პროექტების ფოტოები.</p><div id="project-editor"></div><button id="add-project">+ პროექტი</button><button id="save-projects">პროექტების გამოქვეყნება</button></details><section class="gg-admin-card"><h2>შეკვეთები</h2><button id="refresh-orders">განახლება</button><div id="orders"></div></section></div><script src="site-config.js?v=firebase-20261022-2"></script><script src="upgrade.js?v=firebase-20261022-2" defer></script></body></html>
+
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Garanti Group | Admin Dashboard</title>
+<link rel="stylesheet" href="upgrade.css?v=firebase-20261022-2">
+
+<style>
+:root {
+  --bg:#090e19;
+  --panel:#121b2c;
+  --panel2:#192439;
+  --line:#29364c;
+  --text:#edf3ff;
+  --muted:#98a9c3;
+  --accent:#568aff;
+  --accent2:#83b1ff;
+  --radius:18px;
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body.gg-admin {
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+  font-size:14px;
+}
+body.gg-admin button,
+body.gg-admin input,
+body.gg-admin select,
+body.gg-admin textarea {
+  font:inherit;
+}
+body.gg-admin button {
+  cursor:pointer;
+  border:1px solid transparent;
+  border-radius:11px;
+  padding:11px 16px;
+  background:var(--accent);
+  color:white;
+  font-weight:650;
+  transition:.2s;
+}
+body.gg-admin button:hover {
+  filter:brightness(1.13);
+  transform:translateY(-1px);
+}
+body.gg-admin input,
+body.gg-admin select,
+body.gg-admin textarea {
+  background:#0e1727;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px;
+  max-width:100%;
+}
+body.gg-admin input:focus,
+body.gg-admin textarea:focus {
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+}
+body.gg-admin label {
+  color:var(--muted);
+  display:grid;
+  gap:7px;
+  margin:10px 0;
+}
+body.gg-admin a {color:var(--accent2)}
+[hidden] {display:none!important}
+
+/* LOGIN */
+.login-shell {
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+.login-box {
+  width:min(440px,100%);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:32px;
+  box-shadow:0 25px 80px #0006;
+}
+.login-box h1 {font-size:25px;margin:16px 0 8px}
+.login-box p {color:var(--muted);line-height:1.6}
+.login-box input {width:100%}
+.login-box button {width:100%;margin-top:15px}
+.brand-mark {
+  width:46px;height:46px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#3469f5,#8cafff);
+  color:white;border-radius:14px;
+  font-size:23px;font-weight:900;
+}
+
+/* DASHBOARD */
+.admin-layout {min-height:100vh;display:flex}
+.sidebar {
+  width:260px;
+  flex-shrink:0;
+  background:#101827;
+  border-right:1px solid var(--line);
+  padding:25px 17px;
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+}
+.brand {
+  display:flex;align-items:center;gap:12px;
+  padding:3px 8px;
+}
+.brand strong {font-size:16px;letter-spacing:.5px}
+.brand small {
+  display:block;color:var(--muted);
+  font-size:11px;margin-top:5px;
+  letter-spacing:2px;
+}
+.nav-caption {
+  padding:0 13px;
+  color:#667a99;
+  font-size:11px;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  text-align:left;
+  background:transparent!important;
+  color:#9aacc6!important;
+  margin:5px 0;
+  padding:13px 15px!important;
+}
+.nav-item.active {
+  background:#233858!important;
+  color:white!important;
+  border:1px solid #35578c!important;
+}
+.nav-item:hover {background:#1b2a41!important}
+.nav-icon {font-size:19px;width:25px;text-align:center}
+.sidebar-bottom {margin-top:auto}
+.sidebar-bottom button {
+  width:100%;
+  background:#263247!important;
+  text-align:left;
+}
+.sidebar-bottom a {
+  display:block;
+  text-decoration:none;
+  padding:12px;
+  margin-bottom:8px;
+}
+.main {flex:1;min-width:0}
+.topbar {
+  height:79px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  border-bottom:1px solid var(--line);
+  padding:0 35px;
+  background:#101827;
+}
+.topbar-title {font-size:15px;font-weight:700}
+.topbar-sub {font-size:12px;color:var(--muted);margin-top:5px}
+.top-actions {display:flex;align-items:center;gap:12px}
+.live-pill {
+  background:#113a32;
+  color:#65e5b1;
+  border:1px solid #225b4a;
+  border-radius:30px;
+  padding:8px 12px;
+  font-size:12px;
+}
+.content {
+  padding:32px 35px 60px;
+  max-width:1550px;
+  margin:auto;
+}
+.page-heading {
+  display:flex;align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-bottom:25px;
+}
+.page-heading h1 {
+  margin:0;
+  font-size:clamp(23px,3vw,31px);
+  letter-spacing:-.8px;
+}
+.page-heading p {color:var(--muted);margin:9px 0 0}
+.secondary-btn {
+  background:#223148!important;
+  border:1px solid #34445d!important;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
+  margin-bottom:26px;
+}
+.stat {
+  background:linear-gradient(145deg,#18253b,#111a2a);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px;
+  min-height:145px;
+}
+.stat-top {
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  gap:10px;
+}
+.stat-icon {
+  background:#253b5d;
+  border-radius:12px;
+  padding:9px;
+  color:#a5c6ff;
+}
+.stat-value {
+  font-size:27px;
+  font-weight:800;
+  margin-top:20px;
+}
+.stat-note {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+.panel {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.panel-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+  padding:23px;
+  border-bottom:1px solid var(--line);
+}
+.panel-head h2 {margin:0;font-size:19px}
+.panel-head p {margin:7px 0 0;color:var(--muted)}
+.panel-actions {
+  display:flex;gap:9px;flex-wrap:wrap;
+}
+.panel-body {padding:23px;min-width:0}
+.panel-footer {
+  border-top:1px solid var(--line);
+  padding:18px 23px;
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+.search {
+  width:min(300px,100%);
+  background:#0d1524!important;
+}
+.empty-note {
+  border:1px dashed #35455f;
+  border-radius:12px;
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
+}
+#project-editor,
+#orders {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#project-editor img,
+#orders img {
+  max-width:100%;
+  height:auto;
+  border-radius:12px;
+}
+#project-editor > *,
+#orders > * {max-width:100%}
+#project-editor button,
+#orders button {margin:4px}
+#project-editor textarea {width:100%;min-height:95px}
+#project-editor input[type="file"] {width:100%}
+#orders table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:600px;
+}
+#orders th,#orders td {
+  text-align:left;
+  padding:14px;
+  border-bottom:1px solid var(--line);
+}
+#orders th {color:var(--muted)}
+.table-scroll {overflow-x:auto}
+.section-view {display:none}
+.section-view.active {display:block}
+.mobile-menu {display:none}
+#admin-status {
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:1000;
+  max-width:min(450px,calc(100vw - 40px));
+  background:#1d2b42;
+  border:1px solid #405575;
+  border-radius:12px;
+  padding:13px 18px;
+  box-shadow:0 10px 35px #0006;
+}
+#admin-status:empty {display:none}
+#login[hidden] {display:none!important}
+#dashboard[hidden] {display:none!important}
+
+/* RESPONSIVE */
+@media(max-width:1000px) {
+  .sidebar {width:215px}
+  .content {padding:24px}
+  .topbar {padding:0 24px}
+}
+@media(max-width:760px) {
+  .sidebar {
+    position:fixed;
+    top:0;bottom:0;left:0;
+    width:270px;
+    z-index:200;
+    transform:translateX(-101%);
+    transition:transform .25s;
+    box-shadow:15px 0 45px #0007;
+  }
+  .sidebar.open {transform:translateX(0)}
+  .mobile-menu {display:inline-flex}
+  .topbar {height:70px;padding:0 17px}
+  .content {padding:20px 15px 45px}
+  .stats {grid-template-columns:1fr 1fr;gap:10px}
+  .stat {padding:15px;min-height:120px}
+  .stat-value {font-size:23px}
+  .panel-head,.panel-body {padding:16px}
+  .panel-footer {padding:15px}
+  .panel-actions {width:100%}
+  .search {width:100%}
+  .live-pill {display:none}
+}
+@media(max-width:430px) {
+  .stats {grid-template-columns:1fr}
+  .stat {min-height:105px}
+  .stat-value {margin-top:9px}
+  .panel-actions button {flex:1}
+}
+</style>
+</head>
+
+<body class="gg-admin">
+
+<!-- Firebase status -->
+<p id="admin-status" role="status" aria-live="polite"></p>
+
+<!-- AUTHENTICATION -->
+<div id="auth-shell" class="login-shell">
+  <form id="login" class="login-box">
+    <div class="brand-mark">G</div>
+    <h1>ადმინისტრატორის შესვლა</h1>
+    <p>Garanti Group-ის მართვის პანელი. გამოიყენეთ ადმინისტრატორის Firebase ანგარიში.</p>
+
+    <label>ელფოსტა
+      <input type="email" name="email"
+        autocomplete="username" required
+        placeholder="admin@example.com">
+    </label>
+
+    <label>პაროლი
+      <input type="password" name="password"
+        autocomplete="current-password" required
+        placeholder="••••••••">
+    </label>
+
+    <button type="submit">პანელში შესვლა →</button>
+    <p><a href="./">← მთავარ გვერდზე დაბრუნება</a></p>
+  </form>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard" hidden>
+  <div class="admin-layout">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div>
+          <strong>GARANTI GROUP</strong>
+          <small>ADMIN PANEL</small>
+        </div>
+      </div>
+
+      <nav aria-label="ადმინისტრაციული ნავიგაცია">
+        <div class="nav-caption">მართვა</div>
+
+        <button type="button"
+          class="nav-item active"
+          data-page="overview">
+          <span class="nav-icon">◈</span>
+          მიმოხილვა
+        </button>
+
+        <button type="button"
+          class="nav-item"
+          data-page="projects">
+          <span class="nav-icon">▣</span>
+          პროექტები
+        </button>
+
+        <button type="button"
+          class="nav-item"
+          data-page="orders">
+          <span class="nav-icon">▤</span>
+          შეკვეთები
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="./" target="_blank" rel="noopener">
+          ↗ საიტის ნახვა
+        </a>
+        <button type="button" id="logout">
+          ⇥ სისტემიდან გასვლა
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button type="button" class="secondary-btn mobile-menu"
+            id="menu-toggle" aria-label="მენიუს გახსნა"
+            aria-expanded="false">☰</button>
+          <div>
+            <div class="topbar-title">მართვის ცენტრი</div>
+            <div class="topbar-sub">Garanti Group / Dashboard</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="live-pill">● Admin Panel</span>
+          <button type="button" class="secondary-btn"
+            id="top-refresh">↻</button>
+        </div>
+      </header>
+
+      <div class="content">
+
+        <!-- OVERVIEW -->
+        <section id="page-overview"
+          class="section-view active">
+
+          <div class="page-heading">
+            <div>
+              <h1>მიმოხილვა</h1>
+              <p>პროექტებისა და შეკვეთების ერთიანი მართვა</p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-top">
+                <span>პროექტები</span>
+                <span class="stat-icon">▣</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-note">მართვა პროექტების განყოფილებაში</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-top">
+                <span>შეკვეთები</span>
+                <span class="stat-icon">▤</span>
+              </div>
+              <div class="stat-value">—</div>
+              <div class="stat-note">მონაცემები Firebase-დან</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-top">
+                <span>ადმინისტრირება</span>
+                <span class="stat-icon">✓</span>
+              </div>
+              <div class="stat-value"
+                style="font-size:19px">აქტიური</div>
+              <div class="stat-note">ავტორიზებული სამუშაო სივრცე</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>სწრაფი მოქმედებები</h2>
+                <p>გადადით საჭირო განყოფილებაში</p>
+              </div>
+            </div>
+            <div class="panel-body"
+              style="display:flex;gap:12px;flex-wrap:wrap">
+              <button type="button" data-goto="projects">
+                + პროექტების მართვა
+              </button>
+              <button type="button" class="secondary-btn"
+                data-goto="orders">
+                ▤ შეკვეთების ნახვა
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="page-projects" class="section-view">
+          <div class="page-heading">
+            <div>
+              <h1>შესრულებული პროექტები</h1>
+              <p>ნამუშევრების გალერეა და კონტენტის მართვა</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>პროექტების კატალოგი</h2>
+                <p>ფოტოები, აღწერები და გამოქვეყნება</p>
+              </div>
+              <div class="panel-actions">
+                <button type="button" id="add-project">
+                  + ახალი პროექტი
+                </button>
+              </div>
+            </div>
+
+            <div class="panel-body">
+              <div id="project-editor"></div>
+            </div>
+
+            <div class="panel-footer">
+              <button type="button" id="save-projects">
+                ✓ პროექტების გამოქვეყნება
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ORDERS -->
+        <section id="page-orders" class="section-view">
+          <div class="page-heading">
+            <div>
+              <h1>შეკვეთების მართვა</h1>
+              <p>მომხმარებლების მოთხოვნები და დეტალები</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>შემოსული შეკვეთები</h2>
+                <p>შეკვეთების სია Firebase-დან</p>
+              </div>
+              <div class="panel-actions">
+                <input id="order-search"
+                  class="search"
+                  type="search"
+                  placeholder="შეკვეთების ძებნა...">
+                <button type="button"
+                  class="secondary-btn"
+                  id="refresh-orders">
+                  ↻ განახლება
+                </button>
+              </div>
+            </div>
+
+            <div class="panel-body">
+              <div class="table-scroll">
+                <div id="orders"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Original script compatibility -->
+<div hidden aria-hidden="true">
+  <div id="text-editor"></div>
+  <button type="button" id="save-content">
+    გვერდის ტექსტების შენახვა
+  </button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const pages=["overview","projects","orders"];
+  const sidebar=document.getElementById("sidebar");
+  const menu=document.getElementById("menu-toggle");
+
+  function closeMenu(){
+    sidebar.classList.remove("open");
+    menu.setAttribute("aria-expanded","false");
+  }
+
+  function showPage(name){
+    if(!pages.includes(name)) return;
+
+    document.querySelectorAll(".section-view")
+      .forEach(el=>{
+        el.classList.toggle("active",
+          el.id==="page-"+name);
+      });
+
+    document.querySelectorAll(".nav-item")
+      .forEach(el=>{
+        const active=el.dataset.page===name;
+        el.classList.toggle("active",active);
+        if(active) el.setAttribute("aria-current","page");
+        else el.removeAttribute("aria-current");
+      });
+
+    closeMenu();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  document.querySelectorAll("[data-page],[data-goto]")
+    .forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        showPage(btn.dataset.page||btn.dataset.goto);
+      });
+    });
+
+  menu.addEventListener("click",()=>{
+    const open=sidebar.classList.toggle("open");
+    menu.setAttribute("aria-expanded",String(open));
+  });
+
+  document.getElementById("top-refresh")
+    .addEventListener("click",()=>{
+      document.getElementById("refresh-orders").click();
+    });
+
+  // Search currently rendered orders without modifying Firebase data.
+  const search=document.getElementById("order-search");
+  const orders=document.getElementById("orders");
+
+  function filterOrders(){
+    const query=search.value.trim().toLocaleLowerCase("ka");
+    const rows=orders.querySelectorAll(
+      "tbody tr, .order-card, [data-order-id]"
+    );
+
+    if(rows.length){
+      rows.forEach(row=>{
+        row.hidden=!row.textContent
+          .toLocaleLowerCase("ka").includes(query);
+      });
+    }
+  }
+
+  search.addEventListener("input",filterOrders);
+
+  new MutationObserver(filterOrders)
+    .observe(orders,{childList:true,subtree:true});
+
+  // Original upgrade.js controls login/dashboard visibility.
+  const dashboard=document.getElementById("dashboard");
+  const authShell=document.getElementById("auth-shell");
+  const login=document.getElementById("login");
+
+  function syncAuth(){
+    const authenticated=!dashboard.hidden;
+    authShell.hidden=authenticated;
+    if(!authenticated){
+      showPage("overview");
+      closeMenu();
+    }
+  }
+
+  new MutationObserver(syncAuth).observe(dashboard,{
+    attributes:true,
+    attributeFilter:["hidden","style","class"]
+  });
+
+  new MutationObserver(syncAuth).observe(login,{
+    attributes:true,
+    attributeFilter:["hidden","style","class"]
+  });
+
+  syncAuth();
+})();
+</script>
+
+<!-- Existing Firebase and admin business logic -->
+<script src="site-config.js?v=firebase-20261022-2"></script>
+<script src="upgrade.js?v=firebase-20261022-2" defer></script>
+
+</body>
+</html>
