@@ -4,3 +4,7 @@
 
 .project-grid[hidden]{display:none}
 
+/* The chat is a section, but must not inherit the page section spacing. */
+#gg-chat-panel{padding:0}
+#gg-chat-messages{min-height:0}
+.gg-chat-head,.gg-chat-quick,.gg-chat-form,.gg-chat-foot{flex-shrink:0}
