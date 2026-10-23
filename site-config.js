@@ -1,6 +1,7 @@
 // Public Firebase web configuration. Security is enforced by Auth and deployed Rules.
 window.GG_CONFIG = {
   apiBase: '',
+  projectUploadUrl: 'https://garanti-group-ai.suloanani1.workers.dev/api/upload',
   storageEnabled: false,
   firebase: {
     apiKey: 'AIzaSyAuv6WtXw8SH0BX1Gxv9hW8kv0QhFqqYks',

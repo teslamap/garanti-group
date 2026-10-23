@@ -1,8 +1,9 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import {getAuth, setPersistence, inMemoryPersistence, signInWithEmailAndPassword, signInAnonymously, signOut} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import {getFirestore, doc, collection, getDoc, getDocs, query, orderBy, limit, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-import {getStorage, ref, uploadString, getDownloadURL, getBlob, deleteObject} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js';
-import {validateInquiry, validateContent, photoData} from './firebase-validation.js';
+import {getStorage, ref, uploadString, getBlob, deleteObject} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js';
+import {validateInquiry, validateContent} from './firebase-validation.js';
+import {uploadProjectPhoto} from './project-upload.js';
 
 const config=window.GG_CONFIG;
 const app=initializeApp(config.firebase);
@@ -30,8 +31,8 @@ async function visitor(){await ready;if(!auth.currentUser){anonymousLogin??=sign
 async function admin(){await ready;const user=auth.currentUser;if(!user||user.isAnonymous)throw Error('გაიარეთ ადმინისტრატორის ავტორიზაცია.');const grant=await getDoc(doc(db,'admins',user.uid));if(!grant.exists()||grant.data().active!==true)throw Error('ანგარიშს ადმინისტრატორის უფლება არ აქვს. Firebase Console-ში admins/'+user.uid+' დოკუმენტში დაამატეთ active: true.');return user}
 async function publicContent(){const snap=await getDoc(doc(db,'site','content'));const data=snap.exists()?snap.data():empty();validateContent(data);return data}
 async function publish(data){
- await admin();validateContent(data);const result=structuredClone(data);
- for(const p of result.projects){for(let i=0;i<p.photos.length;i++){const photo=p.photos[i];if(photo.startsWith('data:')){if(!config.storageEnabled)throw Error('პროექტის ფოტოების ატვირთვა საჭიროებს Firebase Storage-ის გააქტიურებას.');const file=ref(storage,'projects/'+crypto.randomUUID());await uploadString(file,photo,'data_url');p.photos[i]=await getDownloadURL(file)}}}
+ const user=await admin();validateContent(data);const result=structuredClone(data);
+ for(const p of result.projects){for(let i=0;i<p.photos.length;i++){const photo=p.photos[i];if(photo.startsWith('data:')){const url=await uploadProjectPhoto(photo,user,config.projectUploadUrl);p.photos[i]=url;data.projects[result.projects.indexOf(p)].photos[i]=url}}}
  if(new TextEncoder().encode(JSON.stringify(result)).length>700000)throw Error('გვერდის კონტენტი ძალიან დიდია.');
  await setDoc(doc(db,'site','content'),{texts:result.texts,links:result.links||{},projects:result.projects});Object.assign(data,result);return {ok:true};
 }
