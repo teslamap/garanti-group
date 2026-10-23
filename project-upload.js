@@ -12,7 +12,11 @@ export async function uploadProjectPhoto(photo,user,endpoint,fetcher=fetch){
  const token=await user.getIdToken(true);
  const response=await fetcher(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token},body:form,signal:AbortSignal.timeout(30000),redirect:'error'});
  const data=await response.json().catch(()=>({}));
- if(response.status===401)throw Error('ატვირთვის ავტორიზაცია ამოიწურა. ხელახლა შედით.');
+ if(response.status===401){
+  if(data.error==='AUTH_REQUIRED')throw Error('Worker-მა ავტორიზაციის ტოკენი ვერ მიიღო (AUTH_REQUIRED). ატვირთვის Authorization სათაური გადასამოწმებელია.');
+  if(data.error==='INVALID_TOKEN')throw Error('Worker-მა განახლებული Firebase ტოკენი უარყო (INVALID_TOKEN). Worker-ში გადაამოწმეთ Firebase პროექტი garanti-group და ID token-ის შემოწმება.');
+  throw Error('Worker-მა ატვირთვის ავტორიზაცია უარყო (HTTP 401). ეს პასუხი სესიის ამოწურვას არ ადასტურებს; საჭიროა Worker-ის ავტორიზაციის შემოწმება.');
+ }
  if(response.status===403)throw Error('Worker-მა ატვირთვა უარყო: საჭიროა Firebase admins/{uid}.active=true როლის შემოწმება; მხოლოდ JWT admin claim საკმარისი არ არის.');
  if(!response.ok)throw Error('პროექტის ფოტო ვერ აიტვირთა. Worker /api/upload გადასამოწმებელია.');
  if(!isProjectImageUrl(data.url))throw Error('Worker-მა project-images bucket-ის სწორი საჯარო URL არ დააბრუნა.');

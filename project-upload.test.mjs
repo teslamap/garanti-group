@@ -60,6 +60,12 @@ test('client preserves authorization errors, rejects foreign/bucket URLs and doe
  }
 });
 
+test('401 errors distinguish missing and rejected tokens without claiming session expiry',async()=>{
+ for(const [error,expected] of [['AUTH_REQUIRED',/AUTH_REQUIRED/],['INVALID_TOKEN',/INVALID_TOKEN/],['unknown',/HTTP 401/]]){
+  await assert.rejects(uploadProjectPhoto(image,user,endpoint,async()=>Response.json({error},{status:401})),e=>expected.test(e.message)&&!e.message.includes('ამოიწურა'));
+ }
+});
+
 test('upload preflight allows Authorization; existing AI chat route keeps its contract',async()=>{
  const preflight=await worker.fetch(new Request(endpoint,{method:'OPTIONS',headers:{Origin:origin}}),env);
  assert.equal(preflight.status,204);assert.match(preflight.headers.get('Access-Control-Allow-Headers'),/Authorization/);
