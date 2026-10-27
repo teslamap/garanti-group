@@ -37,7 +37,7 @@ import {
 
 import {
   uploadProjectPhoto
-} from './project-upload.js?v=github-images-fix4';
+} from './project-upload.js?v=github-images-fix5';
 
 const config = window.GG_CONFIG;
 const app = initializeApp(config.firebase);
