@@ -162,6 +162,7 @@ async function publish(data) {
         );
 
         project.photos[i] = url;
+        data.projects[result.projects.indexOf(project)].photos[i] = url;
       }
     }
   }
