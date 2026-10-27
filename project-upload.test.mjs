@@ -41,6 +41,7 @@ test('server denies missing auth, anonymous, wrong audience, forged/rejected tok
  }
 });
 
+
 test('server fails closed on role service failure, bad origin, bad MIME, huge stream and Supabase failure',async()=>{
  assert.equal((await projectUpload(request(),env,async()=>new Response('',{status:500}))).status,503);
  const wrongOrigin=new Request(request(),{headers:{Origin:'https://evil.example'}});
@@ -74,7 +75,15 @@ test('upload preflight allows Authorization; existing AI chat route keeps its co
 });
 
 test('Firebase publish keeps completed URLs across retries and never writes partial content',async()=>{
- const source=(await readFile(new URL('./firebase-client.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/export /g,'');
+const source = (
+  await readFile(
+    new URL('./firebase-client.js', import.meta.url),
+    'utf8'
+  )
+)
+  .replace(/^\s*import\s+[\s\S]*?\s+from\s+['"][^'"]+['"];\s*/gm, '')
+  .replace(/^\s*import\s+['"][^'"]+['"];\s*/gm, '')
+  .replace(/\bexport\s+/g, '');
  let uploads=0,writes=0,failUpload=true,failWrite=false;
  const context={window:{GG_CONFIG:{firebase:{},storageEnabled:false,projectUploadUrl:endpoint},addEventListener(){}},
   initializeApp:()=>({}),getAuth:()=>({currentUser:{uid:'admin-user',isAnonymous:false}}),getFirestore:()=>({}),getStorage:()=>({}),setPersistence:async()=>{},inMemoryPersistence:{},
