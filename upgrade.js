@@ -1,6 +1,6 @@
 const hasFirebase=!!window.GG_CONFIG?.firebase;
 let firebaseModule;
-const firebase=()=>firebaseModule??=import('./firebase-client.js?v=github-images-fix4');
+const firebase=()=>firebaseModule??=import('./firebase-client.js?v=github-images-fix5');
 const base=(window.GG_CONFIG?.apiBase||'').replace(/\/$/,'');
 const $=(s,r=document)=>r.querySelector(s);let token='',content={texts:{},projects:[],links:{}};
 const el=(tag,text,parent)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(parent)parent.append(n);return n};
