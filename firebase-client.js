@@ -3,7 +3,7 @@ import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase
 import {
   getAuth,
   setPersistence,
-  inMemoryPersistence,
+  browserLocalPersistence,
   signInWithEmailAndPassword,
   signInAnonymously,
   signOut
@@ -46,7 +46,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const ready = setPersistence(auth, inMemoryPersistence);
+const ready = setPersistence(auth, browserLocalPersistence);
 const empty = () => ({texts:{}, links:{}, projects:[]});
 const orderRef = id => doc(db, 'orders', id);
 
