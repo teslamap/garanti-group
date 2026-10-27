@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {readFile} from 'node:fs/promises';
 import worker from './ai-worker/worker.js';
-import {commercialIntent,phoneFrom,saveInquiry,requestId} from './ai-worker/inquiries.js';
+import {commercialIntent,phoneFrom,contactReply,saveInquiry,requestId} from './ai-worker/inquiries.js';
 const schema=await readFile(new URL('./ai-worker/schema.sql',import.meta.url),'utf8');
 function database(){
  const sqlite=new DatabaseSync(':memory:');sqlite.exec(schema);
@@ -33,7 +33,23 @@ test('SQL upsert deduplicates retries, preserves managed status, avoids stale ov
  assert.equal((await saveInquiry(db,id,transcript,true)).state,'removed');
  assert.equal(db.sqlite.prepare('SELECT phone FROM ai_requests').get().phone,'');
 });
+test('Georgian phone formats normalize consistently without accepting foreign numbers or measurements',()=>{
+ for(const phone of ['598123030','598 12 30 30','598-123-030','598.12.30.30','(598) 12 30 30','+995598123030','+995 (598) 12-30-30','995 598 12 30 30','00995 598 12 30 30','0 598 12 30 30','+995 (0) 598 12 30 30','５９８１２３０３０','598\u00a012\u00a030\u00a030'])assert.equal(phoneFrom(phone),'+995598123030',phone);
+ for(const phone of ['032 212 34 56','+995 32 2123456','00995 (32) 212-34-56'])assert.equal(phoneFrom(phone),'+995322123456',phone);
+ assert.equal(phoneFrom('0422 12 34 56'),'+995422123456');
+ for(const value of ['+1 555 123 4567','+44 598123030','123456789','59812303099','1200 x 1500','1200×1500 მმ'])assert.equal(phoneFrom(value),'',value);
+ assert.equal(phoneFrom('ძველი: 598123030\nახალი: 599 12 34 56'),'+995599123456');
+ assert.equal(contactReply([{role:'assistant',content:'დაგვიტოვეთ ტელეფონის ნომერი, რომ დაგიკავშირდეთ.'},{role:'user',content:'598 12 30 30'}]),true);
+});
 const chat=(body,headers={})=>new Request('https://example.test/api/chat',{method:'POST',headers:{Origin:'https://teslamap.github.io','Content-Type':'application/json',...headers},body:JSON.stringify(body)});
+test('phone-only reply to assistant contact request creates inquiry without classifier and updates the same record',async()=>{
+ const db=database();const env={INQUIRIES:db,AI:{async run(model,input){assert.notEqual(input.max_tokens,8,'contact reply must not depend on AI classification');return {response:'გმადლობთ.'}}}};
+ const body={conversationId:crypto.randomUUID(),message:'00995 (598) 12-30-30',history:[{role:'user',content:'გამარჯობა'},{role:'assistant',content:'დაგვიტოვეთ ნომერი, რომ დაგიკავშირდეთ.'}]};
+ const response=await worker.fetch(chat(body),env);assert.equal(response.status,200);assert.equal((await response.json()).inquiry.state,'saved');
+ await worker.fetch(chat(body),env);
+ const row=db.sqlite.prepare('SELECT * FROM ai_requests').get();assert.equal(row.phone,'+995598123030');assert.equal(row.message_count,4);assert.match(row.transcript,/დაგვიტოვეთ/);
+ assert.equal(db.sqlite.prepare('SELECT COUNT(*) n FROM ai_requests').get().n,1);
+});
 test('Worker records inquiry before AI failure, retries update one row, ordinary greetings are not saved',async()=>{
  const db=database();let fail=true;
  const env={INQUIRIES:db,AI:{async run(model,input){if(input.max_tokens===8)return {response:'NO'};if(fail)throw Error('offline');return {response:'რა ზომის გსურთ?'}}}};

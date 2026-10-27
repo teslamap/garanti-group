@@ -4,8 +4,26 @@ export function commercialIntent(text){
  return /შეთავაზ|შეკვეთ|შეძენ|შეძინ|შეკვეთ|მინდა.{0,60}(ფანჯ|კარ|შემინ|მოაჯირ|ტიხრ|ფასად)|მჭირდება|დამიკავშ|დამირეკ|გაზომ|აზომ|გამოთვლ|დამითვალ|რამდენი.*(ღირს|დამიჯდება)|ფასი|ფასის|quote|quotation|order|buy|purchase|call me|price|shetavaz|shekvet|mchirdeba|damirek|gazom|fasi/i.test(text);
 }
 export function phoneFrom(text){
- const candidates=text.match(/\+?\d[\d ()-]{7,23}\d/g)||[];
- return candidates.map(p=>p.replace(/[^+\d]/g,'')).find(p=>/^(?:\+?995)?5\d{8}$/.test(p))||'';
+ // Match complete digit runs: never turn the tail of a foreign/oversized number
+ // into a Georgian phone. Newlines separate numbers and conversation turns.
+ const normalized=String(text).normalize('NFKC').replace(/[\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g,'');
+ const candidates=normalized.match(/\+?\d(?:[ \t\u00a0().\-–—]*\d)*/g)||[];
+ for(const candidate of candidates.reverse()){
+  let digits=candidate.replace(/\D/g,'');
+  if(digits.startsWith('00995'))digits=digits.slice(5);
+  else if(digits.startsWith('995')&&digits.length>=12)digits=digits.slice(3);
+  else if(candidate.startsWith('+'))continue;
+  if(digits.length===10&&digits.startsWith('0'))digits=digits.slice(1);
+  // Geographic (3/4), mobile (5), and non-geographic (7) national numbers.
+  if(/^[3457]\d{8}$/.test(digits))return '+995'+digits;
+ }
+ return '';
+}
+export function contactReply(transcript){
+ const last=transcript.at(-1);
+ if(last?.role!=='user'||!phoneFrom(last.content))return false;
+ const previous=transcript.slice(0,-1).findLast(m=>m.role==='assistant');
+ return !!previous&&/(?:ნომერ|ტელეფონ|nomer|telefon|phone|number|номер|телефон)/i.test(previous.content);
 }
 export async function requestId(value){
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
