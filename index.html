@@ -341,6 +341,78 @@ render();
 <section id="gg-chat-panel" aria-label="AI ჩატი" aria-hidden="true"><div class="gg-chat-head"><div><strong>გარანტი ჯგუფი · AI ასისტენტი</strong><small>რით შეგვიძლია დაგეხმაროთ?</small></div><button class="gg-chat-close" type="button" aria-label="დახურვა">×</button></div><div id="gg-chat-messages" role="log" aria-live="polite"><div class="gg-bubble gg-bot">გამარჯობა! 👋 დაგეხმარებით ალუმინის, მინისა და მეტალოპლასტმასის კონსტრუქციების შესახებ კითხვებზე.</div></div><div class="gg-chat-quick"><button type="button" data-question="რა მომსახურებას სთავაზობთ მომხმარებლებს?">მომსახურება</button><button type="button" data-question="როგორ მივიღო ფასის შეთავაზება?">ფასის შეთავაზება</button><button type="button" data-question="როგორ დაგიკავშირდეთ?">კონტაქტი</button></div><form class="gg-chat-form" id="gg-chat-form"><input id="gg-chat-input" maxlength="1500" autocomplete="off" placeholder="დაწერეთ შეკითხვა..." aria-label="შეტყობინება" required><button id="gg-chat-send" type="submit">➤</button></form><div class="gg-chat-foot"><span id="gg-inquiry-status" role="status"></span><br>კომერციული მოთხოვნის მიმოწერა და მითითებული ტელეფონი გადაეცემა კომპანიის ადმინისტრატორს.<br>AI-ის პასუხები გადაამოწმეთ კონსულტანტთან · <button type="button" id="gg-chat-reset">თავიდან დაწყება</button></div></section>
 <script src="chat-widget.js?v=ai-20261027" defer></script>
 <script src="site-config.js?v=ai-20261027"></script><script src="upgrade.js?v=github-images-20261027" defer></script>
+
+<style id="gg-wizard-style">
+#order.gg-wizard-modal{position:fixed!important;inset:0!important;z-index:9998!important;display:none!important;align-items:center;justify-content:center;padding:16px!important;background:#061b2dcc!important;backdrop-filter:blur(6px);overflow:auto}
+#order.gg-wizard-modal.gg-open{display:flex!important}
+#order.gg-wizard-modal>.wrap{background:#fff;max-width:780px;width:100%;max-height:94dvh;overflow:auto;border-radius:24px;padding:32px!important;position:relative;box-shadow:0 24px 80px #0005}
+#order.gg-wizard-modal .gg-form{max-width:none}
+#order.gg-wizard-modal .gg-item{border:0;padding:0;margin:0}
+#order.gg-wizard-modal .gg-item legend{font-weight:800;margin-bottom:14px}
+#order.gg-wizard-modal .gg-wizard-hidden{display:none!important}
+#order.gg-wizard-modal .gg-wizard-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+#order.gg-wizard-modal .gg-wizard-controls button,.gg-wizard-launch{border:0;border-radius:99px;padding:13px 22px;background:#0b477b;color:#fff;font-weight:800;cursor:pointer}
+#order.gg-wizard-modal .gg-wizard-controls button:disabled{opacity:.45;cursor:not-allowed}
+#order.gg-wizard-modal .gg-wizard-controls .gg-back{background:#e9f1f7;color:#10364f}
+#order.gg-wizard-modal .gg-wizard-close{position:absolute;right:16px;top:12px;border:0;background:#e9f1f7;border-radius:50%;height:38px;width:38px;font-size:24px;cursor:pointer}
+#order.gg-wizard-modal .gg-wizard-progress{height:6px;background:#e6edf4;border-radius:8px;overflow:hidden;margin:18px 0}
+#order.gg-wizard-modal .gg-wizard-progress>div{height:100%;background:#e4b85f;transition:width .2s}
+#order.gg-wizard-modal #add-item,#order.gg-wizard-modal #download-order,#order.gg-wizard-modal [type=submit]{display:none!important}
+#order.gg-wizard-modal .gg-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#order.gg-wizard-modal .gg-fields label{min-width:0}
+#order.gg-wizard-modal input,#order.gg-wizard-modal select,#order.gg-wizard-modal textarea{max-width:100%}
+.gg-wizard-launch{display:inline-block;margin-top:12px}
+@media(max-width:600px){#order.gg-wizard-modal>.wrap{padding:25px 16px!important}#order.gg-wizard-modal .gg-fields{grid-template-columns:1fr}}
+</style>
+<script id="gg-wizard-integration">
+(()=>{let ready=false,step=0,selected=0;
+const q=(s,p=document)=>p.querySelector(s),all=(s,p=document)=>[...p.querySelectorAll(s)];
+function init(){
+const root=q('#order'),form=q('#order-form'),items=q('#items');
+if(ready||!root||!form||!items)return;ready=true;
+root.classList.add('gg-wizard-modal');root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label','შეკვეთის კონფიგურატორი');
+const wrap=q('.wrap',root),close=document.createElement('button');close.className='gg-wizard-close';close.type='button';close.textContent='×';close.setAttribute('aria-label','დახურვა');wrap.prepend(close);
+const progress=document.createElement('div');progress.className='gg-wizard-progress';progress.innerHTML='<div></div>';form.before(progress);
+const heading=document.createElement('h3');heading.id='gg-wizard-heading';progress.after(heading);
+const controls=document.createElement('div');controls.className='gg-wizard-controls';controls.innerHTML='<button type="button" class="gg-back">← უკან</button><span id="gg-wizard-counter"></span><button type="button" class="gg-next">შემდეგი →</button>';form.after(controls);
+const back=q('.gg-back',controls),next=q('.gg-next',controls);
+const contact=q('.gg-fields',form),consent=q('.gg-consent',form),note=q('#connection-note',form),status=q('#order-status',form);
+const labels=()=>all('.gg-fields>label',items.children[selected]);
+function setVisibility(el,visible){if(el)el.classList.toggle('gg-wizard-hidden',!visible)}
+function render(){
+const fields=all('.gg-item',items);selected=Math.min(selected,fields.length-1);
+fields.forEach((f,i)=>setVisibility(f,step<=3&&i===selected));
+setVisibility(contact,step===5);setVisibility(consent,step===5);setVisibility(note,step===5);setVisibility(status,step===5);
+const labs=labels();labs.forEach((l,i)=>setVisibility(l,step===0?i===0:step===1?[2,3,4].includes(i):step===2?[1,6].includes(i):step===3?i===5:false));
+let summary=q('#gg-wizard-summary',form);if(!summary){summary=document.createElement('div');summary.id='gg-wizard-summary';items.after(summary)}
+summary.hidden=step!==4&&step!==5;
+if(!summary.hidden)summary.innerHTML='<h3>შეკვეთის კონსტრუქციები</h3>'+fields.map((f,i)=>{const get=n=>q('[name='+n+']',f)?.value||'';return '<div style="padding:12px;margin:8px 0;background:#f3f7fa;border-radius:12px"><b>#'+(i+1)+' '+get('type')+'</b> — '+get('width')+' × '+get('height')+' მმ · '+get('quantity')+' ცალი</div>'}).join('')+(step===4?'<p>გსურთ კიდევ ერთი კონსტრუქციის დამატება?</p><div style="display:flex;gap:12px;flex-wrap:wrap"><button type="button" id="gg-wizard-add" class="gg-wizard-launch">＋ დიახ, დამატება</button><button type="button" id="gg-wizard-finish" class="gg-wizard-launch">არა, დასრულება →</button></div>':'');
+q('#gg-wizard-add',summary)?.addEventListener('click',()=>{q('#add-item').click();selected=items.children.length-1;step=0;render()});
+q('#gg-wizard-finish',summary)?.addEventListener('click',()=>{step=5;render()});
+const names=['აირჩიეთ კონსტრუქციის ტიპი','მიუთითეთ ზომები და რაოდენობა','მასალა და დამატებითი დეტალები','ფოტოები ან ესკიზები','კიდევ ერთი კონსტრუქცია?','საკონტაქტო ინფორმაცია'];
+heading.textContent=names[step];q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-progress>div',root).style.width=((step+1)/6*100)+'%';
+back.disabled=step===0;next.hidden=step===4;next.textContent=step===5?'შეკვეთის გაგზავნა ✓':'შემდეგი →';
+}
+function open(e){e?.preventDefault();root.classList.add('gg-open');document.body.style.overflow='hidden';step=0;selected=0;render();close.focus()}
+function shut(){root.classList.remove('gg-open');document.body.style.overflow=''}
+close.onclick=shut;root.addEventListener('click',e=>{if(e.target===root)shut()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.contains('gg-open'))shut()});
+back.onclick=()=>{if(step===5)step=4;else step=Math.max(0,step-1);render()};
+next.onclick=()=>{
+const f=items.children[selected];
+if(step===0&&!q('[name=type]',f).value)return;
+if(step===1){for(const name of ['width','height','quantity']){const el=q('[name='+name+']',f);if(!el.reportValidity())return}}
+if(step===5){const submit=q('[type=submit]',form);form.requestSubmit(submit);return}
+step++;render()};
+all('a[href="#order"]').forEach(a=>a.addEventListener('click',open));
+const launcher=document.createElement('button');launcher.className='gg-wizard-launch';launcher.type='button';launcher.textContent='შეკვეთის დაწყება ↗';launcher.onclick=open;
+const hero=q('.hero .actions');if(hero)hero.append(launcher);else q('main')?.prepend(launcher);
+const contactArea=q('#contact .contact-actions');if(contactArea){const b=launcher.cloneNode(true);b.onclick=open;contactArea.append(b)}
+new MutationObserver(()=>{if(root.classList.contains('gg-open')&&step===5&&status?.textContent?.includes('განაცხადი მიღებულია')){step=0;selected=0;render()}}).observe(status,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{const obs=new MutationObserver(()=>{if(q('#order-form')){obs.disconnect();init()}});obs.observe(document.body,{childList:true,subtree:true});init()});else{const obs=new MutationObserver(()=>{if(q('#order-form')){obs.disconnect();init()}});obs.observe(document.body,{childList:true,subtree:true});init()}
+})();
+</script>
+
 </body>
 </html>
 
