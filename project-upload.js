@@ -136,13 +136,13 @@ export async function uploadProjectPhoto(
   if (response.status === 401) {
     if (data.error === 'AUTH_REQUIRED') {
       throw new Error(
-        'Worker-მა ავტორიზაციის ტოკენი ვერ მიიღო.'
+       'Worker-მა ავტორიზაციის ტოკენი ვერ მიიღო (AUTH_REQUIRED).'
       );
     }
 
     if (data.error === 'INVALID_TOKEN') {
       throw new Error(
-        'Worker-მა Firebase ტოკენი უარყო.'
+      'Worker-მა Firebase ტოკენი უარყო (INVALID_TOKEN).'
       );
     }
 
