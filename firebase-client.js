@@ -434,6 +434,8 @@ export async function firebaseApi(
       return {token:'firebase-session'};
     }
 
+    if (path === 'session' && method === 'GET') { await admin(); return {token:'firebase-session'}; }
+
     if (path === 'logout') {
       await signOut(auth);
       return {ok:true};
