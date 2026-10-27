@@ -1,96 +1,178 @@
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-import {getAuth, setPersistence, inMemoryPersistence, signInWithEmailAndPassword, signInAnonymously, signOut} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
-import {getFirestore, doc, collection, getDoc, getDocs, query, orderBy, limit, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-import {getStorage, ref, uploadString, getBlob, deleteObject} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js';
-import {validateInquiry, validateContent} from './firebase-validation.js?v=github-images-20261027';
-import {uploadProjectPhoto} from './project-upload.js?v=github-images-20261027';
 
-const config=window.GG_CONFIG;
-const app=initializeApp(config.firebase);
-const auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);
-const ready=setPersistence(auth,inMemoryPersistence);
-const empty=()=>({texts:{},links:{},projects:[]});
-const orderRef=id=>doc(db,'orders',id);
-const blobUrls=new Set();
-let activeDraft=null;
-let anonymousLogin=null;
-window.addEventListener('pagehide',()=>blobUrls.forEach(URL.revokeObjectURL));
+/**
+ * GARANTI GROUP
+ * Project image upload
+ *
+ * Storage:
+ * - GitHub (new)
+ * - Supabase (legacy compatibility)
+ *
+ * Order attachments remain private in Firebase.
+ */
 
-export function firebaseError(error){
-  const code=error?.code||'';
-  if(code.includes('operation-not-allowed'))return 'Firebase-ში Email/Password და Anonymous შესვლა გასააქტიურებელია.';
-  if(code.includes('invalid-credential')||code.includes('wrong-password')||code.includes('user-not-found')||code.includes('invalid-email'))return 'ელფოსტა ან პაროლი არასწორია.';
-  if(code.includes('configuration-not-found'))return 'Firebase Authentication ჯერ არ არის გააქტიურებული.';
-  if(code.includes('permission-denied')||code.includes('unauthorized'))return 'წვდომა უარყოფილია. შეამოწმეთ Firebase-ის წესები და ადმინისტრატორის უფლება.';
-  if(code.includes('not-found')||code.includes('failed-precondition'))return 'Firebase-ის მონაცემთა ბაზა ან მისი კონფიგურაცია გადასამოწმებელია.';
-  if(code.includes('too-many-requests')||code.includes('resource-exhausted'))return 'მოთხოვნების ლიმიტი ამოიწურა. სცადეთ მოგვიანებით.';
-  if(code.includes('network')||code.includes('unavailable'))return 'კავშირი ვერ დამყარდა. გადაამოწმეთ ინტერნეტი და სცადეთ ხელახლა.';
-  return error.message||'Firebase-თან კავშირის შეცდომა.';
-}
-async function visitor(){await ready;if(!auth.currentUser){anonymousLogin??=signInAnonymously(auth).finally(()=>anonymousLogin=null);await anonymousLogin}return auth.currentUser}
-async function admin(){await ready;const user=auth.currentUser;if(!user||user.isAnonymous)throw Error('გაიარეთ ადმინისტრატორის ავტორიზაცია.');const grant=await getDoc(doc(db,'admins',user.uid));if(!grant.exists()||grant.data().active!==true)throw Error('ანგარიშს ადმინისტრატორის უფლება არ აქვს. Firebase Console-ში admins/'+user.uid+' დოკუმენტში დაამატეთ active: true.');return user}
-async function publicContent(){const snap=await getDoc(doc(db,'site','content'));const data=snap.exists()?snap.data():empty();validateContent(data);return data}
-async function publish(data){
- const user=await admin();validateContent(data);const result=structuredClone(data);
- for(const p of result.projects){for(let i=0;i<p.photos.length;i++){const photo=p.photos[i];if(photo.startsWith('data:')){const url=await uploadProjectPhoto(photo,user,config.projectUploadUrl);p.photos[i]=url;data.projects[result.projects.indexOf(p)].photos[i]=url}}}
- if(new TextEncoder().encode(JSON.stringify(result)).length>700000)throw Error('გვერდის კონტენტი ძალიან დიდია.');
- await setDoc(doc(db,'site','content'),{texts:result.texts,links:result.links||{},projects:result.projects});Object.assign(data,result);return {ok:true};
-}
-async function submit(body){
- validateInquiry(body);if(body.items.some(i=>i.photos.length)&&!config.storageEnabled)throw Error('ფოტოების ონლაინ ატვირთვა ჯერ არ არის ჩართული. შეგიძლიათ განაცხადი ფოტოებიანად ჩამოტვირთოთ ან ფოტოები წაშალოთ და ტექსტური მოთხოვნა გაგზავნოთ.');
- const user=await visitor();
- // Retain the same reservation across retries, preventing duplicate completed orders
- // when a final response is interrupted after the database committed it.
- const fingerprint=JSON.stringify(body);
- if(activeDraft&&activeDraft.fingerprint!==fingerprint){throw Error('წინა გაგზავნა დაუმთავრებელია. სცადეთ იგივე განაცხადის ხელახლა გაგზავნა ან განაახლეთ გვერდი ახალი განაცხადისთვის.');}
- if(!activeDraft){
-  const header=doc(collection(db,'orders'));const id=header.id;
-  const items=body.items.map((item,index)=>({...item,photos:item.photos.map((_,photo)=>'orders/'+user.uid+'/'+id+'/'+index+'/'+photo)}));
-  const batch=writeBatch(db);
-  batch.set(header,{ownerUid:user.uid,name:body.name.trim(),phone:body.phone.trim(),address:body.address.trim(),notes:body.notes.trim(),consent:true,itemCount:items.length,createdAt:serverTimestamp(),submittedAt:null,status:'მზადდება'});
-  items.forEach((item,index)=>batch.set(doc(db,'orders',id,'items',String(index)),item));
-  batch.set(doc(db,'submissionLimits',user.uid),{lastAt:serverTimestamp(),orderId:id});
-  await batch.commit();activeDraft={id,items,fingerprint};
- }
- const {id,items}=activeDraft;
- const existing=await getDoc(orderRef(id));
- if(existing.data()?.status!=='მზადდება'){activeDraft=null;return {id}}
- for(let i=0;i<items.length;i++)for(let j=0;j<items[i].photos.length;j++){
-  const file=ref(storage,items[i].photos[j]);await uploadString(file,body.items[i].photos[j],'data_url');
- }
- await updateDoc(orderRef(id),{status:'ახალი',submittedAt:serverTimestamp()});activeDraft=null;return {id};
-}
-async function privatePhoto(path){const image=await getBlob(ref(storage,path),1500000);const url=URL.createObjectURL(image);blobUrls.add(url);return url}
-async function orders(){
- await admin();blobUrls.forEach(URL.revokeObjectURL);blobUrls.clear();
- const snap=await getDocs(query(collection(db,'orders'),orderBy('createdAt','desc'),limit(100)));
- const result=[];
- for(const record of snap.docs){const data=record.data();const rows=await getDocs(collection(db,'orders',record.id,'items'));const items=[];
-  for(const row of rows.docs){const item=row.data();const images=[];for(const path of item.photos)try{images.push(await privatePhoto(path))}catch{ /* Keep the order readable when an image upload is incomplete. */ }items.push({...item,photos:images,index:Number(row.id)})}
-  items.sort((a,b)=>a.index-b.index);result.push({id:record.id,created:data.createdAt?.toDate().toISOString()||'',status:data.status,value:{...data,items}});
- }return result;
-}
-async function removeOrder(id){await admin();const items=await getDocs(collection(db,'orders',id,'items'));
- for(const item of items.docs)for(const path of item.data().photos){try{await deleteObject(ref(storage,path))}catch(e){if(e.code!=='storage/object-not-found')throw e}}
- const batch=writeBatch(db);items.docs.forEach(i=>batch.delete(i.ref));batch.delete(orderRef(id));await batch.commit();return {ok:true};
-}
-export async function firebaseApi(path,method='GET',body){
- try{
- if(path.startsWith('ai-requests')&&['GET','PATCH','DELETE'].includes(method)){
-  const user=await admin();const query=path.slice('ai-requests'.length);
-  if(query&&!/^\?before=/.test(query))throw Error('უცნობი მოქმედება.');
-  const response=await fetch('https://garanti-group-ai.suloanani1.workers.dev/api/inquiries'+query,{method,headers:{Authorization:'Bearer '+await user.getIdToken(),'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
-  const data=await response.json();if(!response.ok)throw Error(response.status===401||response.status===403?'მოთხოვნებზე წვდომა უარყოფილია. შედით ადმინისტრატორის ანგარიშით.':'მოთხოვნები ვერ ჩაიტვირთა. სცადეთ ხელახლა.');return data;
- }
- if(path==='login'&&method==='POST'){await ready;await signInWithEmailAndPassword(auth,body.email,body.password);try{await admin()}catch(e){await signOut(auth);throw e}return {token:'firebase-session'}}
- if(path==='logout'){await signOut(auth);return {ok:true}}
- if(path==='content'&&method==='GET')return await publicContent();
- if(path==='content'&&method==='PUT')return await publish(body);
- if(path==='orders'&&method==='POST')return await submit(body);
- if(path==='orders'&&method==='GET')return await orders();
- if(path==='orders'&&method==='PUT'){await admin();await updateDoc(orderRef(body.id),{status:body.status});return {ok:true}}
- if(path.startsWith('orders?id=')&&method==='DELETE')return await removeOrder(decodeURIComponent(path.split('=')[1]));
- throw Error('უცნობი მოქმედება.');
- }catch(e){throw Error(firebaseError(e))}
+export function isProjectImageUrl(value) {
+  try {
+    if (typeof value !== 'string') return false;
+
+    const u = new URL(value);
+
+    // Only clean HTTPS public URLs are accepted.
+    if (
+      u.protocol !== 'https:' ||
+      u.username ||
+      u.password ||
+      u.port ||
+      u.search ||
+      u.hash
+    ) {
+      return false;
+    }
+
+    // Previous Supabase public project images.
+    const supabase =
+      /^[a-z0-9-]+\.supabase\.co$/.test(u.hostname) &&
+      /^\/storage\/v1\/object\/public\/project-images\/[A-Za-z0-9/_-]+\.(?:jpg|png|webp)$/.test(
+        u.pathname
+      );
+
+    // GitHub raw content.
+    // Supports:
+    // /main/projects/UUID.jpg
+    // /COMMIT_SHA/projects/UUID.jpg
+    // /COMMIT_SHA/uploads/projects/UUID.jpg
+    const github =
+      u.hostname === 'raw.githubusercontent.com' &&
+      /^\/teslamap\/garanti-group\/(?:[a-f0-9]{40}|main)\/(?:uploads\/)?projects\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(
+        u.pathname
+      );
+
+    return supabase || github;
+  } catch {
+    return false;
+  }
 }
 
+export async function uploadProjectPhoto(
+  photo,
+  user,
+  endpoint,
+  fetcher = fetch
+) {
+  if (!endpoint) {
+    throw Error(
+      'პროექტის ფოტოების ატვირთვის Worker არ არის მითითებული.'
+    );
+  }
+
+  // Accept JPEG, PNG and WebP data URLs.
+  const match =
+    /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(
+      photo
+    );
+
+  if (!match || photo.length > 2000100) {
+    throw Error(
+      'ფოტო: JPG, PNG ან WebP, მაქსიმუმ 1.5 MB'
+    );
+  }
+
+  const bytes = Uint8Array.from(
+    atob(match[2]),
+    c => c.charCodeAt(0)
+  );
+
+  if (!bytes.length || bytes.length > 1500000) {
+    throw Error(
+      'ფოტო: მაქსიმუმ 1.5 MB'
+    );
+  }
+
+  const extension =
+    match[1] === 'jpeg' ? 'jpg' : match[1];
+
+  const form = new FormData();
+
+  form.append(
+    'file',
+    new Blob([bytes], {
+      type: 'image/' + match[1]
+    }),
+    'project.' + extension
+  );
+
+  // Refresh Firebase ID token.
+  const token = await user.getIdToken(true);
+
+  const response = await fetcher(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + token
+    },
+    body: form,
+    signal: AbortSignal.timeout(30000),
+    redirect: 'error'
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  // Authentication errors.
+  if (response.status === 401) {
+    if (data.error === 'AUTH_REQUIRED') {
+      throw Error(
+        'Worker-მა ავტორიზაციის ტოკენი ვერ მიიღო (AUTH_REQUIRED).'
+      );
+    }
+
+    if (data.error === 'INVALID_TOKEN') {
+      throw Error(
+        'Worker-მა Firebase ტოკენი უარყო (INVALID_TOKEN).'
+      );
+    }
+
+    throw Error(
+      'Worker-მა ატვირთვის ავტორიზაცია უარყო (HTTP 401).'
+    );
+  }
+
+  // Admin permission.
+  if (response.status === 403) {
+    throw Error(
+      'Worker-მა ატვირთვა უარყო. გადაამოწმეთ Firebase admins/{uid}.active=true.'
+    );
+  }
+
+  // GitHub storage configuration.
+  if (data.error === 'GITHUB_STORAGE_NOT_CONFIGURED') {
+    throw Error(
+      'GitHub-ზე ფოტოების ატვირთვა ჯერ არ არის ჩართული.'
+    );
+  }
+
+  if (data.error === 'GITHUB_STORAGE_ACCESS_DENIED') {
+    throw Error(
+      'GitHub-ზე ჩაწერის წვდომა უარყოფილია.'
+    );
+  }
+
+  if (data.error === 'GITHUB_STORAGE_CONFLICT') {
+    throw Error(
+      'GitHub-ზე პარალელური ცვლილებაა. სცადეთ ხელახლა.'
+    );
+  }
+
+  // Other server errors.
+  if (!response.ok) {
+    throw Error(
+      'პროექტის ფოტო ვერ აიტვირთა. Worker /api/upload გადასამოწმებელია.'
+    );
+  }
+
+  // Validate the returned public image URL.
+  if (!isProjectImageUrl(data.url)) {
+    throw Error(
+      'Worker-მა პროექტის ფოტოს სწორი საჯარო URL არ დააბრუნა.'
+    );
+  }
+
+  return data.url;
+}
