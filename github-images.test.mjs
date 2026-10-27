@@ -83,11 +83,6 @@ test('GitHub project image URLs and legacy URLs are validated safely', () => {
     true
   );
 });
- const good=`https://raw.githubusercontent.com/teslamap/garanti-group/${sha}/uploads/projects/12345678-1234-1234-1234-123456789012.png`;
- assert.ok(isProjectImageUrl(good));
- for(const url of [good.replace('teslamap','other'),good+'?token=secret',good.replace('.png','.svg'),good.replace('raw.githubusercontent.com','raw.githubusercontent.com.evil.example')])assert.equal(isProjectImageUrl(url),false);
- assert.ok(isProjectImageUrl('https://test.supabase.co/storage/v1/object/public/project-images/projects/old.png'));
-});
 
 test('health reports GitHub readiness without exposing token',async()=>{
  const r=await worker.fetch(new Request('https://worker.example/health'),env);
