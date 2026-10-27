@@ -2,8 +2,8 @@ import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase
 import {getAuth, setPersistence, inMemoryPersistence, signInWithEmailAndPassword, signInAnonymously, signOut} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import {getFirestore, doc, collection, getDoc, getDocs, query, orderBy, limit, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 import {getStorage, ref, uploadString, getBlob, deleteObject} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js';
-import {validateInquiry, validateContent} from './firebase-validation.js';
-import {uploadProjectPhoto} from './project-upload.js';
+import {validateInquiry, validateContent} from './firebase-validation.js?v=github-images-20261027';
+import {uploadProjectPhoto} from './project-upload.js?v=github-images-20261027';
 
 const config=window.GG_CONFIG;
 const app=initializeApp(config.firebase);
@@ -93,3 +93,4 @@ export async function firebaseApi(path,method='GET',body){
  throw Error('უცნობი მოქმედება.');
  }catch(e){throw Error(firebaseError(e))}
 }
+

@@ -1,4 +1,5 @@
 import {REQUEST_STATUSES, commercialIntent, phoneFrom, contactReply, requestId, boundedJson, saveInquiry} from './inquiries.js';
+import {saveGithubImage, githubImagesConfigured} from './github-images.js';
 // Run node scripts/build-worker.mjs for the dashboard's standalone deploy.js.
 const MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const ALLOWED_ORIGIN = "https://teslamap.github.io";
@@ -277,6 +278,11 @@ async function upload(request, env) {
     return json({ error: "FILE_CONTENT_MISMATCH" }, 400);
   }
 
+  if (bucket === "project-images") {
+    const result = await saveGithubImage(bytes, TYPES[file.type], env);
+    return json({...result, bucket, size: file.size, contentType: file.type}, 201);
+  }
+
   // The authenticated user owns this namespace.
   // The Firestore order must separately record the same uid and orderId.
   const prefix = bucket === "project-images"
@@ -539,8 +545,10 @@ export default {
         status: "ok",
         aiBinding: Boolean(env.AI),
         storageConfigured: storageConfigured(env),
+        projectImageProvider: 'github',
+        projectImagesConfigured: githubImagesConfigured(env),
         inquiriesConfigured: Boolean(env.INQUIRIES),
-        release: 'ai-requests-20261027-phones2',
+        release: 'github-project-images-20261027',
         firebaseProjectId: "garanti-group",
         uploadAuth: "firestore-admin-document-v1",
         model: MODEL
@@ -584,6 +592,9 @@ export default {
         return json({ error: code }, 400);
       }
       if (code === "AUTH_SERVICE_UNAVAILABLE") return json({ error: code }, 503);
+      if (code === 'GITHUB_STORAGE_NOT_CONFIGURED') return json({error: code}, 503);
+      if (code === 'GITHUB_STORAGE_CONFLICT') return json({error: code}, 409);
+      if (['GITHUB_STORAGE_ACCESS_DENIED', 'GITHUB_STORAGE_UPLOAD_FAILED'].includes(code)) return json({error: code}, 502);
       if (authErrors.includes(code)) return json({ error: code }, 401);
       if (forbiddenErrors.includes(code)) return json({ error: code }, 403);
 
@@ -595,3 +606,4 @@ export default {
     }
   }
 };
+

@@ -14,3 +14,6 @@ database_id = "c7c3efca-e620-463a-8361-10f0329fa415"
 FIREBASE_PROJECT_ID = "garanti-group"
 SUPABASE_URL = "https://apicvpmbrcobufxkxmhr.supabase.co"
 # Preserve SUPABASE_SECRET_KEY as an existing Worker secret; never commit it.
+# PROJECT_IMAGES_GITHUB_TOKEN: Worker secret, fine-grained GitHub Contents write
+# access to teslamap/garanti-group only. Never put it in browser configuration.
+
