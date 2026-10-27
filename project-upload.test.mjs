@@ -86,7 +86,7 @@ const source = (
   .replace(/\bexport\s+/g, '');
  let uploads=0,writes=0,failUpload=true,failWrite=false;
  const context={window:{GG_CONFIG:{firebase:{},storageEnabled:false,projectUploadUrl:endpoint},addEventListener(){}},
-  initializeApp:()=>({}),getAuth:()=>({currentUser:{uid:'admin-user',isAnonymous:false}}),getFirestore:()=>({}),getStorage:()=>({}),setPersistence:async()=>{},inMemoryPersistence:{},
+  initializeApp:()=>({}),getAuth:()=>({currentUser:{uid:'admin-user',isAnonymous:false}}),getFirestore:()=>({}),getStorage:()=>({}),setPersistence:async()=>{},browserLocalPersistence:{},
   doc:()=>({}),getDoc:async()=>({exists:()=>true,data:()=>({active:true})}),validateContent,structuredClone,TextEncoder,URL,
   setDoc:async(_ref,data)=>{if(failWrite)throw Error('database unavailable');assert.equal(data.projects[0].photos.length,2);writes++},
   uploadProjectPhoto:async(_photo,_user,url)=>{assert.equal(url,endpoint);uploads++;if(failUpload&&uploads===2)throw Error('upload interrupted');return `https://testproject.supabase.co/storage/v1/object/public/project-images/projects/image${uploads}.png`}};
