@@ -52,10 +52,40 @@ test('GitHub errors and malformed responses never return a successful URL or ups
  await assert.rejects(saveGithubImage(new Uint8Array([1]),'png',env,async()=>Response.json({commit:{sha},content:{path:'other.png'}},{status:201})),/GITHUB_STORAGE_UPLOAD_FAILED/);
 });
 
-test('URL validation restricts GitHub images to pinned commits in this gallery; legacy URLs remain valid',()=>{
+test('GitHub project image URLs and legacy URLs are validated safely', () => {
+  const uuid = '12345678-1234-1234-1234-123456789012';
+
+  const good = `https://raw.githubusercontent.com/teslamap/garanti-group/${sha}/uploads/projects/${uuid}.png`;
+
+  const mainUrl = `https://raw.githubusercontent.com/teslamap/garanti-group/main/projects/${uuid}.png`;
+
+  assert.equal(isProjectImageUrl(good), true);
+  assert.equal(isProjectImageUrl(mainUrl), true);
+
+  const invalid = [
+    good.replace('teslamap', 'other'),
+    good + '?token=secret',
+    good.replace('.png', '.svg'),
+    good.replace(
+      'raw.githubusercontent.com',
+      'raw.githubusercontent.com.evil.example'
+    )
+  ];
+
+  for (const url of invalid) {
+    assert.equal(isProjectImageUrl(url), false);
+  }
+
+  assert.equal(
+    isProjectImageUrl(
+      'https://test.supabase.co/storage/v1/object/public/project-images/projects/old.png'
+    ),
+    true
+  );
+});
  const good=`https://raw.githubusercontent.com/teslamap/garanti-group/${sha}/uploads/projects/12345678-1234-1234-1234-123456789012.png`;
  assert.ok(isProjectImageUrl(good));
- for(const url of [good.replace('teslamap','other'),good.replace(sha,'main'),good+'?token=secret',good.replace('.png','.svg'),good.replace('raw.githubusercontent.com','raw.githubusercontent.com.evil.example')])assert.equal(isProjectImageUrl(url),false);
+ for(const url of [good.replace('teslamap','other'),good+'?token=secret',good.replace('.png','.svg'),good.replace('raw.githubusercontent.com','raw.githubusercontent.com.evil.example')])assert.equal(isProjectImageUrl(url),false);
  assert.ok(isProjectImageUrl('https://test.supabase.co/storage/v1/object/public/project-images/projects/old.png'));
 });
 
