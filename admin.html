@@ -480,7 +480,7 @@ body.gg-admin a {color:var(--accent2)}
                 <span>პროექტები</span>
                 <span class="stat-icon">▣</span>
               </div>
-              <div class="stat-value">—</div>
+              <div class="stat-value" id="project-count">—</div>
               <div class="stat-note">მართვა პროექტების განყოფილებაში</div>
             </div>
 
@@ -489,8 +489,8 @@ body.gg-admin a {color:var(--accent2)}
                 <span>შეკვეთები</span>
                 <span class="stat-icon">▤</span>
               </div>
-              <div class="stat-value">—</div>
-              <div class="stat-note">მონაცემები Firebase-დან</div>
+              <div class="stat-value" id="order-count">—</div>
+              <div class="stat-note">ბოლო 100 შეკვეთა Firebase-დან</div>
             </div>
 
             <div class="stat">
@@ -578,7 +578,7 @@ body.gg-admin a {color:var(--accent2)}
                 <input id="order-search"
                   class="search"
                   type="search"
-                  placeholder="შეკვეთების ძებნა...">
+                  placeholder="შეკვეთების ძებნა..." aria-label="შეკვეთების ძებნა">
                 <button type="button"
                   class="secondary-btn"
                   id="refresh-orders">
@@ -711,8 +711,8 @@ body.gg-admin a {color:var(--accent2)}
 </script>
 
 <!-- Existing Firebase and admin business logic -->
-<script src="site-config.js?v=project-upload-20261023"></script>
-<script src="upgrade.js?v=project-upload-20261023" defer></script>
+<script src="site-config.js?v=20261027"></script>
+<script src="upgrade.js?v=20261027" defer></script>
 
 </body>
 </html>

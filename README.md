@@ -1,3 +1,9 @@
+# Current production website
+
+The active site is https://teslamap.github.io/garanti-group/ with Firebase Auth/Firestore, public project photos in Supabase through the Cloudflare Worker, and Georgian AI chat at `https://garanti-group-ai.suloanani1.workers.dev/api/chat`.
+
+See [2026-10-27 review and verification](docs/review-2026-10-27.md) for current findings, changes and remaining checks. Order photo submission remains disabled by configuration; public project uploads and private order attachments are separate systems. The Node server and older setup instructions below are alternatives, not the current Pages deployment.
+
 # Garanti Group — ჩატით ფასის შეფასება
 
 არსებული გვერდი შენარჩუნებულია; დაემატა ქართული AI ჩატი და გამოთვლამდე შესამოწმებელი ფორმა. ეს არის მოსამზადებელი ვერსია: რეალური ფასები არ არის შეყვანილი და AI გასაღები არ არის დაყენებული.
