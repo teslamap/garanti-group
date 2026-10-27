@@ -18,6 +18,9 @@ export async function uploadProjectPhoto(photo,user,endpoint,fetcher=fetch){
   throw Error('Worker-მა ატვირთვის ავტორიზაცია უარყო (HTTP 401). ეს პასუხი სესიის ამოწურვას არ ადასტურებს; საჭიროა Worker-ის ავტორიზაციის შემოწმება.');
  }
  if(response.status===403)throw Error('Worker-მა ატვირთვა უარყო: საჭიროა Firebase admins/{uid}.active=true როლის შემოწმება; მხოლოდ JWT admin claim საკმარისი არ არის.');
+ if(response.status===413)throw Error('ფოტო ძალიან დიდია. აირჩიეთ მაქსიმუმ 1.5 MB ფოტო.');
+ if(response.status===429)throw Error('ატვირთვის ლიმიტი ამოიწურა. სცადეთ ცოტა ხანში.');
+ if(data.error==='STORAGE_NOT_CONFIGURED')throw Error('ფოტოების საცავი ჯერ არ არის გამართული. დაუკავშირდით ადმინისტრატორს.');
  if(!response.ok)throw Error('პროექტის ფოტო ვერ აიტვირთა. Worker /api/upload გადასამოწმებელია.');
  if(!isProjectImageUrl(data.url))throw Error('Worker-მა project-images bucket-ის სწორი საჯარო URL არ დააბრუნა.');
  return data.url;
