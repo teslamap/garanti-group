@@ -156,7 +156,7 @@ async function verifyFirebase(request, env) {
     {
       headers: { Authorization: `Bearer ${jwt}` },
       signal: AbortSignal.timeout(10000),
-      redirect: "error"
+      redirect: "manual"
     }
   );
 
@@ -293,7 +293,7 @@ async function upload(request, env) {
     }),
     body: bytes,
     signal: AbortSignal.timeout(20000),
-    redirect: "error"
+    redirect: "manual"
   });
 
   if (!response.ok) {
@@ -540,7 +540,7 @@ export default {
         aiBinding: Boolean(env.AI),
         storageConfigured: storageConfigured(env),
         inquiriesConfigured: Boolean(env.INQUIRIES),
-        release: 'ai-requests-20261027',
+        release: 'ai-requests-20261027-redirect1',
         firebaseProjectId: "garanti-group",
         uploadAuth: "firestore-admin-document-v1",
         model: MODEL

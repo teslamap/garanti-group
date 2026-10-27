@@ -18,7 +18,7 @@ async function activeAdmin(token,fetcher){
  try{const parts=token.split('.');if(parts.length!==3)return false;claims=JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')))}catch{return false}
  const now=Math.floor(Date.now()/1000);
  if(claims.aud!==PROJECT||claims.iss!==`https://securetoken.google.com/${PROJECT}`||typeof claims.sub!=='string'||!claims.sub||claims.sub.length>128||claims.sub.includes('/')||!Number.isFinite(claims.exp)||claims.exp<=now||!Number.isFinite(claims.iat)||claims.iat>now||claims.firebase?.sign_in_provider==='anonymous')return false;
- const role=await fetcher(`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/admins/${encodeURIComponent(claims.sub)}`,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000),redirect:'error'});
+ const role=await fetcher(`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/admins/${encodeURIComponent(claims.sub)}`,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000),redirect:'manual'});
  if([401,403,404].includes(role.status))return false;
  if(!role.ok)throw Error('AUTH_UNAVAILABLE');
  return (await role.json()).fields?.active?.booleanValue===true;
@@ -51,7 +51,7 @@ export async function projectUpload(request,env,fetcher=fetch){
   const bytes=new Uint8Array(await file.arrayBuffer()),type=imageType(bytes);
   if(!type||file.type!==type[0])return json({error:'INVALID_IMAGE'},400);
   const path=`projects/${crypto.randomUUID()}.${type[1]}`;
-  const response=await fetcher(`${supabase.origin}/storage/v1/object/project-images/${path}`,{method:'POST',headers:{Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,apikey:env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':type[0],'x-upsert':'false'},body:bytes,signal:AbortSignal.timeout(20000),redirect:'error'});
+  const response=await fetcher(`${supabase.origin}/storage/v1/object/project-images/${path}`,{method:'POST',headers:{Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,apikey:env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':type[0],'x-upsert':'false'},body:bytes,signal:AbortSignal.timeout(20000),redirect:'manual'});
   if(!response.ok)return json({error:'STORAGE_UPLOAD_FAILED'},502);
   return json({url:`${supabase.origin}/storage/v1/object/public/project-images/${path}`});
  }catch(error){return json({error:error.message==='TOO_LARGE'?'TOO_LARGE':'UPLOAD_UNAVAILABLE'},error.message==='TOO_LARGE'?413:503)}

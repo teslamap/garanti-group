@@ -58,9 +58,13 @@ test('admin endpoints reject unauthenticated access and enforce verified active 
  const token=[{alg:'RS256',kid:'test'},{aud:'garanti-group',iss:'https://securetoken.google.com/garanti-group',sub:'test-admin',exp:now+3600,iat:now,auth_time:now,firebase:{sign_in_provider:'password'}}].map(x=>Buffer.from(JSON.stringify(x)).toString('base64url')).join('.')+'.signature';
  const original=globalThis.fetch;let active=false;
  try{
-  globalThis.fetch=async()=>Response.json({fields:{active:{booleanValue:active}}});
+  globalThis.fetch=async(url,options)=>{assert.equal(options.redirect,'manual','Cloudflare only supports follow or manual redirects');return Response.json({fields:{active:{booleanValue:active}}})};
   assert.equal((await worker.fetch(request('GET',null,token),env)).status,403);
   active=true;assert.equal((await (await worker.fetch(request('GET',null,token),env)).json()).requests.length,1);
+  const verifyFetch=globalThis.fetch;
+  globalThis.fetch=async()=>new Response(null,{status:302,headers:{Location:'https://example.test/untrusted'}});
+  assert.equal((await worker.fetch(request('GET',null,token),env)).status,503,'redirected authorization must fail closed');
+  globalThis.fetch=verifyFetch;
   assert.equal((await worker.fetch(request('PATCH',{id,status:'ADMIN'},token),env)).status,400);
   assert.equal((await worker.fetch(request('PATCH',{id,status:'დასრულებული'},token),env)).status,200);
   assert.equal((await worker.fetch(request('DELETE',{id},token),env)).status,200);
