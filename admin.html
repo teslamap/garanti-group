@@ -362,6 +362,7 @@ body.gg-admin a {color:var(--accent2)}
   .stat-value {margin-top:9px}
   .panel-actions button {flex:1}
 }
+#ai-requests details{padding:16px;margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow-wrap:anywhere}#ai-requests summary{cursor:pointer;line-height:1.8}#ai-requests p{line-height:1.8}#ai-requests button,#ai-requests select{margin:10px 8px 0 0}
 </style>
 </head>
 
@@ -430,7 +431,7 @@ body.gg-admin a {color:var(--accent2)}
           <span class="nav-icon">▤</span>
           შეკვეთები
         </button>
-      </nav>
+      <button type="button" class="nav-item" data-page="ai-requests"><span class="nav-icon">✦</span>AI მოთხოვნები</button></nav>
 
       <div class="sidebar-bottom">
         <a href="./" target="_blank" rel="noopener">
@@ -559,7 +560,8 @@ body.gg-admin a {color:var(--accent2)}
           </div>
         </section>
 
-        <!-- ORDERS -->
+        <section id="page-ai-requests" class="section-view"><div class="page-heading"><div><h1>AI მოთხოვნები</h1><p>ჩატში მიღებული კომერციული მოთხოვნები</p></div></div><div class="panel"><div class="panel-head"><h2>შემოსული მოთხოვნები</h2><div class="panel-actions"><input id="ai-search" type="search" class="search" aria-label="AI მოთხოვნების ძებნა" placeholder="ნომერი, ტელეფონი, შინაარსი..."><button type="button" id="refresh-ai" class="secondary-btn">↻ განახლება</button></div></div><div class="panel-body"><p id="ai-request-status" role="status"></p><div id="ai-requests"></div><button type="button" id="load-more-ai" hidden>მეტის ჩატვირთვა</button></div></div></section>
+<!-- ORDERS -->
         <section id="page-orders" class="section-view">
           <div class="page-heading">
             <div>
@@ -612,7 +614,7 @@ body.gg-admin a {color:var(--accent2)}
 (function(){
   "use strict";
 
-  const pages=["overview","projects","orders"];
+  const pages=["overview","projects","orders","ai-requests"];
   const sidebar=document.getElementById("sidebar");
   const menu=document.getElementById("menu-toggle");
 
@@ -623,6 +625,7 @@ body.gg-admin a {color:var(--accent2)}
 
   function showPage(name){
     if(!pages.includes(name)) return;
+    if(name==="ai-requests") document.getElementById("refresh-ai").click();
 
     document.querySelectorAll(".section-view")
       .forEach(el=>{
@@ -657,6 +660,7 @@ body.gg-admin a {color:var(--accent2)}
   document.getElementById("top-refresh")
     .addEventListener("click",()=>{
       document.getElementById("refresh-orders").click();
+      document.getElementById("refresh-ai").click();
     });
 
   // Search currently rendered orders without modifying Firebase data.
@@ -711,8 +715,8 @@ body.gg-admin a {color:var(--accent2)}
 </script>
 
 <!-- Existing Firebase and admin business logic -->
-<script src="site-config.js?v=project-upload-20261023"></script>
-<script src="upgrade.js?v=project-upload-20261023" defer></script>
+<script src="site-config.js?v=ai-20261027"></script>
+<script src="upgrade.js?v=ai-20261027" defer></script>
 
 </body>
 </html>

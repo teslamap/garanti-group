@@ -4,3 +4,13 @@ compatibility_date = "2026-10-21"
 
 [ai]
 binding = "AI"
+
+[[d1_databases]]
+binding = "INQUIRIES"
+database_name = "garanti-ai-requests"
+database_id = "c7c3efca-e620-463a-8361-10f0329fa415"
+
+[vars]
+FIREBASE_PROJECT_ID = "garanti-group"
+SUPABASE_URL = "https://apicvpmbrcobufxkxmhr.supabase.co"
+# Preserve SUPABASE_SECRET_KEY as an existing Worker secret; never commit it.

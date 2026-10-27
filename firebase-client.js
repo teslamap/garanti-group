@@ -76,6 +76,12 @@ async function removeOrder(id){await admin();const items=await getDocs(collectio
 }
 export async function firebaseApi(path,method='GET',body){
  try{
+ if(path.startsWith('ai-requests')&&['GET','PATCH','DELETE'].includes(method)){
+  const user=await admin();const query=path.slice('ai-requests'.length);
+  if(query&&!/^\?before=/.test(query))throw Error('უცნობი მოქმედება.');
+  const response=await fetch('https://garanti-group-ai.suloanani1.workers.dev/api/inquiries'+query,{method,headers:{Authorization:'Bearer '+await user.getIdToken(),'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
+  const data=await response.json();if(!response.ok)throw Error(response.status===401||response.status===403?'მოთხოვნებზე წვდომა უარყოფილია. შედით ადმინისტრატორის ანგარიშით.':'მოთხოვნები ვერ ჩაიტვირთა. სცადეთ ხელახლა.');return data;
+ }
  if(path==='login'&&method==='POST'){await ready;await signInWithEmailAndPassword(auth,body.email,body.password);try{await admin()}catch(e){await signOut(auth);throw e}return {token:'firebase-session'}}
  if(path==='logout'){await signOut(auth);return {ok:true}}
  if(path==='content'&&method==='GET')return await publicContent();

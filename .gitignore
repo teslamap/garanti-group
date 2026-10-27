@@ -7,5 +7,6 @@ data/
 
 node_modules/
 .firebase/
+ai-worker/deploy.js
 *-debug.log
 

@@ -1,0 +1,16 @@
+#gg-chat-toggle{isolation:isolate;background:linear-gradient(135deg,#1265d8,#1593ef);animation:gg-float 4s ease-in-out infinite}
+#gg-chat-toggle::before,#gg-chat-toggle::after{content:"";position:absolute;inset:-5px;border:2px solid #248bf0;border-radius:inherit;z-index:-1;pointer-events:none;animation:gg-pulse 3.2s ease-out infinite}
+#gg-chat-toggle::after{animation-delay:1.6s}
+#gg-chat-toggle[aria-expanded=true]{animation:none}
+#gg-chat-toggle[aria-expanded=true]::before,#gg-chat-toggle[aria-expanded=true]::after{animation:none;opacity:0}
+#gg-chat-teaser{position:fixed;right:24px;bottom:101px;z-index:9998;max-width:min(290px,calc(100vw - 40px));padding:16px 35px 16px 18px;background:#fff;color:#16436b;border:1px solid #d4e7fd;border-radius:18px 18px 4px 18px;box-shadow:0 8px 32px #0d509025;font:13px/1.7 "Noto Sans Georgian",sans-serif}
+#gg-chat-teaser[hidden]{display:none}
+#gg-teaser-close{position:absolute;right:8px;top:6px;border:0;background:transparent;color:#51708e;font-size:20px;cursor:pointer}
+#gg-chat-reset{border:0;background:transparent;color:#12649a;cursor:pointer;padding:5px;font:inherit}
+.gg-chat-foot{font-size:10px;padding:6px 14px 10px;line-height:1.5}
+#gg-inquiry-status{padding:0 14px;color:#19673f;font-size:10px;line-height:1.6}
+#gg-chat-toggle:focus-visible,#gg-teaser-close:focus-visible{outline:3px solid #67b7ff;outline-offset:5px}
+@keyframes gg-pulse{0%{transform:scale(1);opacity:.6}85%,100%{transform:scale(1.22,1.7);opacity:0}}
+@keyframes gg-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:650px){#gg-chat-teaser{right:14px;bottom:90px}}
+@media(prefers-reduced-motion:reduce){#gg-chat-toggle,#gg-chat-toggle::before,#gg-chat-toggle::after{animation:none}#gg-chat-toggle::before,#gg-chat-toggle::after{opacity:0}}
