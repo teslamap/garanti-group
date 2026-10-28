@@ -458,7 +458,7 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
 #order.gg-wizard-modal>.wrap::before{content:"";position:absolute;z-index:0;inset:0 auto 0 0;width:150px;border-radius:11px 0 0 11px;background:linear-gradient(0deg,#03121dec 0%,#06162283 38%,#06162220 78%),url("assets/v2-hero.webp") center/cover no-repeat}
 #order.gg-wizard-modal>.wrap::after{content:"სანდო\A ხარისხი\A თანამედროვე\A სისტემებისთვის";white-space:pre;position:absolute;z-index:1;left:16px;bottom:79px;color:#d0d9dc;font-size:17px;line-height:1.42;font-weight:600;text-shadow:0 2px 12px #000}
 #order.gg-wizard-modal>.wrap>.kicker,#order.gg-wizard-modal>.wrap>h2,#order.gg-wizard-modal>.wrap>p.gg-note:not(#connection-note){display:none!important}
-#order.gg-wizard-modal .gg-wizard-close{z-index:5;right:14px;top:13px;width:32px;height:32px;background:#081923b8;border-color:#47606d;font-size:21px}
+#order.gg-wizard-modal .gg-wizard-close{z-index:5;left:12px;right:auto;top:13px;width:32px;height:32px;background:#081923b8;border-color:#47606d;font-size:21px}
 #order.gg-wizard-modal .gg-wizard-progress{height:auto;display:grid;grid-template-columns:46px minmax(70px,1fr) auto;align-items:center;gap:16px;overflow:visible;margin:0 0 22px;padding:0;background:transparent;border-radius:0}
 #order.gg-wizard-modal .gg-wizard-stepbadge{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#f3d18a,#c99e55);color:#13202a;font-size:15px;font-weight:800;box-shadow:0 0 0 3px #e8c98024}
 #order.gg-wizard-modal .gg-wizard-track{height:18px;position:relative;display:flex;align-items:center;justify-content:space-between}
@@ -468,6 +468,7 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
 #order.gg-wizard-modal .gg-wizard-track i{position:relative;z-index:1;display:block;width:7px;height:7px;border-radius:50%;background:#40515c;border:1px solid #1c2b34}
 #order.gg-wizard-modal .gg-wizard-track i.active{background:#eac477;box-shadow:0 0 0 2px #eac47735}
 #order.gg-wizard-modal .gg-wizard-stepname{color:#bec8cc;font-size:13px;white-space:nowrap}
+#order.gg-wizard-modal .gg-wizard-stepname{max-width:175px;overflow:hidden;text-overflow:ellipsis}
 #order.gg-wizard-modal #gg-wizard-heading{font-size:27px;line-height:1.3;margin:0 0 7px;color:#f0f4f5}
 #order.gg-wizard-modal .gg-wizard-subtitle{margin:0 0 20px;color:#a9b7bd;font-size:17px;line-height:1.5}
 #order.gg-wizard-modal .gg-wizard-controls{margin-top:17px;padding-top:0;border-top:0;background:none}
@@ -475,17 +476,18 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
 #order.gg-wizard-modal .gg-wizard-controls .gg-back{background:transparent;color:#c2cdd2;border-color:#806744}
 #order.gg-wizard-modal #gg-wizard-counter{display:none}
 #order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:0}
+#order.gg-wizard-modal .gg-item .gg-fields>label:first-child{grid-column:1/-1}
 #order.gg-wizard-modal .gg-type-choice{position:relative;display:block;height:204px;min-height:204px;padding:0!important;overflow:hidden;text-align:center;background:#0c1c28!important;border:1px solid #344654!important;border-radius:12px!important;color:#f0f3f4!important;font-size:16px;line-height:1.25;box-shadow:none!important;isolation:isolate}
 #order.gg-wizard-modal .gg-type-choice:hover{border-color:#a99062!important;transform:translateY(-1px)}
 #order.gg-wizard-modal .gg-type-choice.selected{border:2px solid #e1bd75!important;color:#fff0ce!important;box-shadow:0 0 0 1px #e4c37865,inset 0 0 0 1px #e4c37865!important}
-#order.gg-wizard-modal .gg-type-photo{position:absolute;z-index:0;inset:0;background-image:linear-gradient(0deg,#07131ee8 0%,#07131e72 30%,transparent 65%),url("assets/order-type-sprite.png");background-repeat:no-repeat;background-size:300% 200%;transition:transform .35s;}
+#order.gg-wizard-modal .gg-type-photo{position:absolute;z-index:0;inset:0;background-image:linear-gradient(0deg,#07131ee8 0%,#07131e72 30%,transparent 65%),url("assets/order-type-sprite.png");background-repeat:no-repeat;background-size:340% 200%;transition:transform .35s;}
 #order.gg-wizard-modal .gg-type-choice:hover .gg-type-photo{transform:scale(1.035)}
 #order.gg-wizard-modal .gg-type-choice:nth-child(1) .gg-type-photo{background-position:0 0}
-#order.gg-wizard-modal .gg-type-choice:nth-child(2) .gg-type-photo{background-position:50% 0}
-#order.gg-wizard-modal .gg-type-choice:nth-child(3) .gg-type-photo{background-position:100% 0}
+#order.gg-wizard-modal .gg-type-choice:nth-child(2) .gg-type-photo{background-position:47% 0}
+#order.gg-wizard-modal .gg-type-choice:nth-child(3) .gg-type-photo{background-position:94% 0}
 #order.gg-wizard-modal .gg-type-choice:nth-child(4) .gg-type-photo{background-position:0 100%}
-#order.gg-wizard-modal .gg-type-choice:nth-child(5) .gg-type-photo{background-position:50% 100%}
-#order.gg-wizard-modal .gg-type-choice:nth-child(6) .gg-type-photo{background-position:100% 100%}
+#order.gg-wizard-modal .gg-type-choice:nth-child(5) .gg-type-photo{background-position:47% 100%}
+#order.gg-wizard-modal .gg-type-choice:nth-child(6) .gg-type-photo{background-position:94% 100%}
 #order.gg-wizard-modal .gg-type-label{position:absolute;inset:auto 7px 12px;z-index:1;text-shadow:0 2px 5px #000;font-weight:700}
 #order.gg-wizard-modal .gg-type-check{position:absolute;z-index:2;right:8px;top:8px;width:23px;height:23px;display:none;place-items:center;border-radius:50%;background:#efc778;color:#14202a;font-size:15px;font-weight:900}
 #order.gg-wizard-modal .gg-type-choice.selected .gg-type-check{display:grid}
@@ -495,10 +497,10 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
  #order.gg-wizard-modal>.wrap{width:100%;height:100dvh;min-height:0;padding:142px 16px 16px!important;border-radius:0}
  #order.gg-wizard-modal>.wrap::before{inset:0 0 auto;height:122px;width:auto;border-radius:0;background-position:center 45%}
  #order.gg-wizard-modal>.wrap::after{display:none}
- #order.gg-wizard-modal .gg-wizard-close{top:14px;right:14px}
+ #order.gg-wizard-modal .gg-wizard-close{top:14px;left:auto;right:14px}
+ #order.gg-wizard-modal .gg-wizard-stepname{display:none}
  #order.gg-wizard-modal .gg-wizard-progress{grid-template-columns:42px minmax(45px,1fr);gap:10px;margin-bottom:16px}
  #order.gg-wizard-modal .gg-wizard-stepbadge{width:42px;height:42px;font-size:13px}
- #order.gg-wizard-modal .gg-wizard-stepname{display:none}
  #order.gg-wizard-modal #gg-wizard-heading{font-size:21px;margin-bottom:5px}
  #order.gg-wizard-modal .gg-wizard-subtitle{font-size:14px;margin-bottom:14px}
  #order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -531,7 +533,7 @@ function mountTypeChoices(field){
  let group=q('.gg-type-choices',field);
  if(!group){
   group=document.createElement('div');group.className='gg-type-choices';group.setAttribute('role','group');group.setAttribute('aria-label','კონსტრუქციის ტიპი');
-  [...select.options].filter(option=>option.value).forEach((option,index)=>{
+  [...select.options].filter(option=>['კარ-ფანჯარა','მინის მოაჯირი','საშხაპე კაბინა','მინის ფასადი','მინის ტიხარი','სხვა'].includes(option.value)).forEach((option,index)=>{
    const button=document.createElement('button');button.type='button';button.className='gg-type-choice';button.dataset.value=option.value;button.setAttribute('aria-pressed','false');
    const photo=document.createElement('span');photo.className='gg-type-photo';photo.setAttribute('aria-hidden','true');
    const title=document.createElement('span');title.className='gg-type-label';title.textContent=option.textContent;
@@ -562,7 +564,7 @@ if(!summary.hidden)summary.innerHTML='<h3>შეკვეთის კონს�
 q('#gg-wizard-add',summary)?.addEventListener('click',()=>{q('#add-item').click();selected=items.children.length-1;step=0;render()});
 q('#gg-wizard-finish',summary)?.addEventListener('click',()=>{step=5;render()});
 const names=['აირჩიეთ კონსტრუქციის ტიპი','მიუთითეთ ზომები და რაოდენობა','მასალა და დამატებითი დეტალები','ფოტოები ან ესკიზები','კიდევ ერთი კონსტრუქცია?','საკონტაქტო ინფორმაცია'];
-heading.textContent=names[step];subtitle.textContent=step===0?'აირჩიეთ თქვენთვის სასურველი ტიპი':step===1?'მიუთითეთ ზომები მილიმეტრებში':'გააგრძელეთ შეკვეთის დეტალების შევსება';q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-stepbadge',root).textContent=(step+1)+'/6';q('.gg-wizard-stepname',root).textContent=names[step];q('.gg-wizard-fill',root).style.width=((step+1)/6*100)+'%';all('.gg-wizard-track i',root).forEach((mark,i)=>mark.classList.toggle('active',i<=step));
+heading.textContent=names[step];subtitle.textContent=step===0?'აირჩიეთ თქვენთვის სასურველი ტიპი':step===1?'მიუთითეთ ზომები მილიმეტრებში':'გააგრძელეთ შეკვეთის დეტალების შევსება';q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-stepbadge',root).textContent=(step+1)+'/6';q('.gg-wizard-stepname',root).textContent=step===0?'კონსტრუქციის შერჩევა':names[step];q('.gg-wizard-fill',root).style.width=((step+1)/6*100)+'%';all('.gg-wizard-track i',root).forEach((mark,i)=>mark.classList.toggle('active',i<=step));
 back.disabled=step===0;next.hidden=step===4;next.textContent=step===5?'შეკვეთის გაგზავნა ✓':'შემდეგი →';
 }
 function open(e){e?.preventDefault();step=0;selected=0;root.scrollTop=0;wrap.scrollTop=0;root.classList.add('gg-open');document.body.classList.add('gg-wizard-open');document.body.style.overflow='hidden';render();requestAnimationFrame(()=>{root.scrollTop=0;wrap.scrollTop=0});close.focus()}
