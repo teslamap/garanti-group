@@ -10,6 +10,6 @@ export function validateInquiry(body){
 export function validateContent(data){
  if(!data||!data.texts||typeof data.texts!=='object'||Array.isArray(data.texts)||Object.keys(data.texts).length>500||Object.values(data.texts).some(x=>!text(x,10000))||!Array.isArray(data.projects)||data.projects.length>100)throw Error('გვერდის კონტენტი არასწორია.');
  if(data.links&&(typeof data.links!=='object'||Array.isArray(data.links)||Object.keys(data.links).length>200||Object.values(data.links).some(x=>!x||!text(x.label,100)||!text(x.href,2000)||!/^(https?:|tel:|mailto:|#|\.\/)/.test(x.href))))throw Error('ბმული არასწორია.');
- for(const p of data.projects)if(!text(p.title,200,1)||!text(p.category,100)||!text(p.description,4000)||!Array.isArray(p.photos)||p.photos.length>5||p.photos.some(x=>!photoData(x)&&!isProjectImageUrl(x)&&!(typeof x==='string'&&x.startsWith('https://firebasestorage.googleapis.com/v0/b/garanti-group.firebasestorage.app/o/projects%2F')&&x.length<3000)))throw Error('პროექტის ინფორმაცია ან ფოტო არასწორია.');
+ for(const p of data.projects)if(!text(p.title,200,1)||!text(p.category,100)||!text(p.description,4000)||(p.type!==undefined&&!text(p.type,100))||(p.location!==undefined&&!text(p.location,100))||!Array.isArray(p.photos)||p.photos.length>5||p.photos.some(x=>!photoData(x)&&!isProjectImageUrl(x)&&!(typeof x==='string'&&x.startsWith('https://firebasestorage.googleapis.com/v0/b/garanti-group.firebasestorage.app/o/projects%2F')&&x.length<3000)))throw Error('პროექტის ინფორმაცია ან ფოტო არასწორია.');
 }
 

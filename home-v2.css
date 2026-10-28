@@ -43,10 +43,9 @@ main{display:flex;flex-direction:column}
 .v2-all-projects{margin-left:auto;flex:none;border:1px solid #b39156;border-radius:20px;padding:12px 23px;font-size:12px}
 .project-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto;gap:17px}
 .project,.project:first-child{grid-column:auto;grid-row:auto;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;min-width:0;padding:0}
-.project:before{position:relative;display:block;inset:auto;height:0;padding-top:62%;margin-bottom:8px;background-image:url('assets/v2-projects.webp');background-size:400% auto;border-radius:10px;z-index:0}
-.project.p1:before{background-position:0% center}.project.p2:before{background-position:33.333% center}.project.p3:before{background-position:66.666% center}.project.p4:before{background-position:100% center}
-.project:nth-child(n+5){display:none}
-.v2-all-expanded .project:nth-child(n+5){display:block}
+.project-grid{display:none!important}
+.project-empty{margin:30px 0 6px;padding:22px 0;border-top:1px solid #ffffff19;color:#9aaeb8;font-size:14px;letter-spacing:.02em}
+.project-empty[hidden]{display:none}
 .projects .gg-filter{margin-top:32px}
 .project-label{position:relative;inset:auto}
 .project-label small{font-size:12px;color:#b7c8d1;letter-spacing:0;font-weight:400;display:block}
@@ -54,9 +53,11 @@ main{display:flex;flex-direction:column}
 .project-label{display:flex;flex-direction:column-reverse}
 .project:after{top:12px;right:12px}
 .projects .gg-gallery{grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
-.projects .gg-gallery button{background:none;color:white;border:0;padding:0;text-align:left}
-.projects .gg-gallery img{width:100%;aspect-ratio:1.6;object-fit:cover;border-radius:10px}
-.projects .gg-gallery h3{font-size:15px}.projects .gg-gallery p{color:#b7c8d1}
+.projects .gg-gallery button{position:relative;background:#0a171f;color:white;border:1px solid #ffffff17;border-radius:10px;padding:0 0 14px;text-align:left;overflow:hidden;transition:transform .25s,border-color .25s}
+.projects .gg-gallery button:hover{transform:translateY(-4px);border-color:#c7a66799}
+.projects .gg-gallery img{width:100%;aspect-ratio:1.6;object-fit:cover;border-radius:0}
+.projects .gg-gallery h3{font-size:15px;margin:13px 14px 4px}.projects .gg-gallery p{color:#b7c8d1;margin:0 14px;font-size:12px}
+.projects .gg-gallery .project-meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .services{order:3}.about{order:4}.brand-section{order:5}.contact{order:7}#order{order:6}
 .services,.about,.brand-section{background:#0a151b;color:#edf2f4;border-top:1px solid #ffffff12}
 .service,.brand-row{background:#10212b;border-color:#253943;color:#fff}
@@ -67,6 +68,24 @@ main{display:flex;flex-direction:column}
 footer{background:#050e12;color:#b9c9d2}
 a:focus-visible,button:focus-visible{outline:2px solid #e2c17c;outline-offset:5px}
 [hidden]{display:none!important}
+.gg-project-dialog{width:min(1160px,calc(100vw - 48px));max-width:none;max-height:min(88dvh,820px);padding:18px;border:1px solid #d8c08b42;border-radius:22px;background:linear-gradient(145deg,#0d1b24f5,#071117fa);color:#f4f2eb;box-shadow:0 32px 100px #000b;overflow:auto}
+.gg-project-dialog::backdrop{background:#02070cc9;backdrop-filter:blur(7px)}
+.gg-project-dialog .project-dialog-close{position:absolute;z-index:2;right:26px;top:26px;width:42px;height:42px;margin:0;padding:0;border:1px solid #ffffff26;border-radius:50%;background:#12212bd9;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.gg-project-dialog .project-dialog-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:clamp(24px,4vw,54px);align-items:center}
+.gg-project-dialog .project-dialog-gallery{min-width:0}
+.gg-project-dialog .project-dialog-no-photo{display:grid;place-items:center;min-height:300px;aspect-ratio:1.12;border:1px dashed #ffffff30;border-radius:13px;background:linear-gradient(145deg,#152936,#091319);color:#9baab1;font-size:14px}
+.gg-project-dialog .project-dialog-gallery img{display:block;width:100%;max-height:calc(88dvh - 56px);aspect-ratio:1.12;object-fit:cover;margin:0;border-radius:13px}
+.gg-project-dialog .project-dialog-gallery img+img{margin-top:10px}
+.gg-project-dialog .project-dialog-copy{padding:38px 28px 38px 0}
+.gg-project-dialog .project-dialog-type{display:inline-flex;margin:0 0 20px;padding:8px 13px;border:1px solid #c6a36370;border-radius:999px;color:#dfc17f;font-size:12px;letter-spacing:.04em}
+.gg-project-dialog h2{margin:0 0 16px;color:#f8f7f3;font-size:clamp(28px,3vw,42px);line-height:1.2;letter-spacing:-.03em}
+.gg-project-dialog .project-dialog-description{margin:0;color:#b8c5cb;font-size:15px;line-height:1.8;white-space:pre-line}
+.gg-project-dialog .project-dialog-meta{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:26px;padding-top:20px;border-top:1px solid #ffffff20}
+.gg-project-dialog .project-dialog-meta div{display:grid;grid-template-columns:30px 1fr;column-gap:10px;align-items:center}
+.gg-project-dialog .project-dialog-meta .meta-icon{grid-row:span 2;color:#d7b46b;font-size:22px}
+.gg-project-dialog .project-dialog-meta small{color:#84959e;font-size:11px}
+.gg-project-dialog .project-dialog-meta strong{color:#f1eee6;font-size:13px;font-weight:500}
+@media(max-width:760px){.gg-project-dialog{width:calc(100vw - 24px);max-height:92dvh;padding:12px;border-radius:17px}.gg-project-dialog .project-dialog-close{right:20px;top:20px;width:38px;height:38px}.gg-project-dialog .project-dialog-layout{grid-template-columns:1fr;gap:0}.gg-project-dialog .project-dialog-gallery img{max-height:38dvh;aspect-ratio:1.55}.gg-project-dialog .project-dialog-copy{padding:23px 12px 15px}.gg-project-dialog .project-dialog-type{margin-bottom:13px}.gg-project-dialog h2{font-size:27px}.gg-project-dialog .project-dialog-description{font-size:14px}.gg-project-dialog .project-dialog-meta{margin-top:20px;padding-top:15px}}
 #order.gg-wizard-modal,.gg-modal{color:#102c43}
 html #gg-chat-teaser{display:none}
 html #gg-chat-toggle{background:#10232c;color:#e3c17e;border:1px solid #ad8d56;animation:none;box-shadow:0 5px 20px #0005}

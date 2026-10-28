@@ -1,6 +1,6 @@
 # Website upgrade — operational status
 
-The GitHub Pages frontend includes the existing site and chatbot, a larger desktop chat, accessible project details, category-filtered real project galleries when populated, and a repeatable construction inquiry form. Each item has type, material, dimensions in **millimetres**, quantity, notes and up to 3 photos. JPG/PNG/WebP only, max 1.5 MB each. Up to 20 items; total request max 16 MB. Download is local and is explicitly not a submission.
+The GitHub Pages frontend includes the existing site and chatbot, a larger desktop chat, a responsive cinematic project detail dialog, type-filtered real project galleries when populated, and a repeatable construction inquiry form. Project records support type, city, description and up to 5 real photos. Each inquiry item has type, material, dimensions in **millimetres**, quantity, notes and up to 3 photos. JPG/PNG/WebP only, max 1.5 MB each. Up to 20 items; total request max 16 MB. Download is local and is explicitly not a submission.
 
 ## Activate the backend
 
@@ -13,7 +13,7 @@ GitHub Pages cannot run Node or SQLite. The included `cms.mjs` is connected to t
 
 Start with `node server.mjs` (existing AI secrets remain independent). Set `site-config.js` `apiBase` to that HTTPS host, then push main again. Do not place a password/token/API secret in this public file. Until configured, inquiry submission and admin login show an explicit unavailable state; no false confirmation is given. The existing Cloudflare chatbot endpoint is preserved.
 
-Open `/garanti-group/admin.html`, sign in, edit page text and contacts, add completed projects with up to 5 photos each, and publish. Changes are stored server-side and visible to all visitors. Existing illustrated project cards remain until real projects are published; they are identified as illustrative in their detail view. Admin supports order inspection, photos, status changes and permanent deletion. Sessions last one hour and remain only in browser memory. No public signup/default password. SQLite persists orders, photos and content in `cms.sqlite` using parameterized queries; order photos are never served publicly. Public project photos are deliberately public.
+Open `/garanti-group/admin.html`, sign in, edit page text and contacts, choose each project's type and city, add up to 5 photos, and publish. The gallery stays empty until actual projects are published; it contains no sample project cards or generated portfolio photos. Project cards open a dark, responsive detail dialog with photo, type, city and description. Changes are stored server-side and visible to all visitors. Admin supports order inspection, photos, status changes and permanent deletion. Sessions last one hour and remain only in browser memory. No public signup/default password. SQLite persists orders, photos and content in `cms.sqlite` using parameterized queries; order photos are never served publicly. Public project photos are deliberately public.
 
 ## Operations and limits
 

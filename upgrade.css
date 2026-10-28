@@ -8,3 +8,10 @@
 #gg-chat-panel{padding:0}
 #gg-chat-messages{min-height:0}
 .gg-chat-head,.gg-chat-quick,.gg-chat-form,.gg-chat-foot{flex-shrink:0}
+.gg-project-dialog{font-family:Manrope,"Noto Sans Georgian",sans-serif}
+.gg-admin-card .gg-project-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gg-admin-card .gg-project-fields label{min-width:0}
+.gg-admin-card .gg-project-photos{margin-top:14px}
+.gg-admin-card .gg-project-delete{background:#612b2d;border-color:#8b4548}
+.gg-admin-empty{padding:22px;border:1px dashed #b9cbd8;border-radius:14px;color:#60788a;text-align:center}
+@media(max-width:650px){.gg-admin-card .gg-project-fields{grid-template-columns:1fr}}
