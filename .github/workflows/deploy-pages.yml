@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r assets _site/
-          cp home-v2.css home-v2.js _site/
+          cp home-v2.css home-v2.js admin-v2.css _site/
           cp index.html admin.html upgrade.css upgrade.js site-config.js firebase-client.js firebase-validation.js project-upload.js chat-widget.js chat-widget.css ai-admin.js _site/
       - name: Upload website
         uses: actions/upload-pages-artifact@v3

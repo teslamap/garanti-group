@@ -364,6 +364,7 @@ body.gg-admin a {color:var(--accent2)}
 }
 #ai-requests details{padding:16px;margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow-wrap:anywhere}#ai-requests summary{cursor:pointer;line-height:1.8}#ai-requests p{line-height:1.8}#ai-requests button,#ai-requests select{margin:10px 8px 0 0}
 </style>
+<link rel="stylesheet" href="admin-v2.css?v=20261028-1">
 </head>
 
 <body class="gg-admin">
@@ -481,7 +482,7 @@ body.gg-admin a {color:var(--accent2)}
                 <span>პროექტები</span>
                 <span class="stat-icon">▣</span>
               </div>
-              <div class="stat-value">—</div>
+              <div class="stat-value" id="project-count">—</div>
               <div class="stat-note">მართვა პროექტების განყოფილებაში</div>
             </div>
 
@@ -490,8 +491,17 @@ body.gg-admin a {color:var(--accent2)}
                 <span>შეკვეთები</span>
                 <span class="stat-icon">▤</span>
               </div>
-              <div class="stat-value">—</div>
+              <div class="stat-value" id="order-count">—</div>
               <div class="stat-note">მონაცემები Firebase-დან</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-top">
+                <span>AI მოთხოვნები</span>
+                <span class="stat-icon">✦</span>
+              </div>
+              <div class="stat-value" id="ai-count">—</div>
+              <div class="stat-note">მიღებული მოთხოვნები</div>
             </div>
 
             <div class="stat">
@@ -560,7 +570,31 @@ body.gg-admin a {color:var(--accent2)}
           </div>
         </section>
 
-        <section id="page-ai-requests" class="section-view"><div class="page-heading"><div><h1>AI მოთხოვნები</h1><p>ჩატში მიღებული კომერციული მოთხოვნები</p></div></div><div class="panel"><div class="panel-head"><h2>შემოსული მოთხოვნები</h2><div class="panel-actions"><input id="ai-search" type="search" class="search" aria-label="AI მოთხოვნების ძებნა" placeholder="ნომერი, ტელეფონი, შინაარსი..."><button type="button" id="refresh-ai" class="secondary-btn">↻ განახლება</button></div></div><div class="panel-body"><p id="ai-request-status" role="status"></p><div id="ai-requests"></div><button type="button" id="load-more-ai" hidden>მეტის ჩატვირთვა</button></div></div></section>
+        <section id="page-ai-requests" class="section-view">
+          <div class="page-heading">
+            <div>
+              <h1>AI მოთხოვნები</h1>
+              <p>ჩატში მიღებული კომერციული მოთხოვნები</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>შემოსული მოთხოვნები</h2>
+                <p>AI ჩატის მოთხოვნების ნახვა და დამუშავება</p>
+              </div>
+              <div class="panel-actions">
+                <input id="ai-search" type="search" class="search" aria-label="AI მოთხოვნების ძებნა" placeholder="ნომერი, ტელეფონი, შინაარსი...">
+                <button type="button" id="refresh-ai" class="secondary-btn">↻ განახლება</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <p id="ai-request-status" role="status"></p>
+              <div id="ai-requests"></div>
+              <button type="button" id="load-more-ai" hidden>მეტის ჩატვირთვა</button>
+            </div>
+          </div>
+        </section>
 <!-- ORDERS -->
         <section id="page-orders" class="section-view">
           <div class="page-heading">
@@ -617,6 +651,17 @@ body.gg-admin a {color:var(--accent2)}
   const pages=["overview","projects","orders","ai-requests"];
   const sidebar=document.getElementById("sidebar");
   const menu=document.getElementById("menu-toggle");
+
+  function syncCounts(){
+    const counts={
+      "project-count":document.querySelectorAll("#project-editor > .gg-admin-card").length,
+      "order-count":document.querySelectorAll("#orders > details").length,
+      "ai-count":document.querySelectorAll("#ai-requests > details").length
+    };
+    Object.entries(counts).forEach(([id,count])=>{
+      document.getElementById(id).textContent=String(count);
+    });
+  }
 
   function closeMenu(){
     sidebar.classList.remove("open");
@@ -685,6 +730,14 @@ body.gg-admin a {color:var(--accent2)}
 
   new MutationObserver(filterOrders)
     .observe(orders,{childList:true,subtree:true});
+
+  ["project-editor","orders","ai-requests"].forEach(id=>{
+    new MutationObserver(syncCounts).observe(document.getElementById(id),{
+      childList:true,
+      subtree:true
+    });
+  });
+  syncCounts();
 
   // Original upgrade.js controls login/dashboard visibility.
   const dashboard=document.getElementById("dashboard");
