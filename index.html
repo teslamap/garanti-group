@@ -399,26 +399,56 @@ render();
 <script src="site-config.js?v=ai-20261027"></script><script src="upgrade.js?v=project-carousel-20261028" defer></script>
 
 <style id="gg-wizard-style">
-#order.gg-wizard-modal{position:fixed!important;inset:0!important;z-index:9998!important;display:none!important;align-items:center;justify-content:center;padding:16px!important;background:#061b2dcc!important;backdrop-filter:blur(6px);overflow:auto}
+#gw-open,#gw-overlay{display:none!important}
+#order.gg-wizard-modal{--wiz-bg:#081721;--wiz-panel:#0d202c;--wiz-panel-2:#122936;--wiz-line:#28414e;--wiz-text:#eff4f4;--wiz-muted:#9caeb7;--wiz-gold:#d9b875;position:fixed!important;inset:0!important;z-index:9998!important;display:none!important;align-items:center;justify-content:center;padding:16px!important;background:rgb(3 11 16 / 82%)!important;backdrop-filter:blur(9px);overflow:auto;color:var(--wiz-text)!important}
 #order.gg-wizard-modal.gg-open{display:flex!important}
-#order.gg-wizard-modal>.wrap{background:#fff;max-width:780px;width:100%;max-height:94dvh;overflow:auto;border-radius:24px;padding:32px!important;position:relative;box-shadow:0 24px 80px #0005}
-#order.gg-wizard-modal .gg-form{max-width:none}
+#order.gg-wizard-modal>.wrap{background:radial-gradient(ellipse at 90% 0%,#183443 0,transparent 36%),linear-gradient(145deg,#0d202c,#081721 74%);border:1px solid #39515d;max-width:720px;width:100%;max-height:94dvh;overflow:auto;border-radius:20px;padding:30px!important;position:relative;box-shadow:0 30px 95px #000b}
+#order.gg-wizard-modal>.wrap>.kicker{color:var(--wiz-gold);font-size:10px;letter-spacing:.18em;margin-bottom:10px}
+#order.gg-wizard-modal>.wrap>h2{color:var(--wiz-text);font-size:22px;letter-spacing:-.03em;margin:0 45px 7px 0}
+#order.gg-wizard-modal>.wrap>p.gg-note:not(#connection-note){color:var(--wiz-muted);font-size:12px;line-height:1.65;margin:0 0 16px;max-width:62ch}
+#order.gg-wizard-modal #gg-wizard-heading{color:var(--wiz-text);font-size:20px;letter-spacing:-.025em;margin:0 0 17px}
+#order.gg-wizard-modal .gg-form{max-width:none;margin:0}
 #order.gg-wizard-modal .gg-item{border:0;padding:0;margin:0}
-#order.gg-wizard-modal .gg-item legend{font-weight:800;margin-bottom:14px}
+#order.gg-wizard-modal .gg-item legend{color:var(--wiz-muted);font-weight:700;margin-bottom:14px}
 #order.gg-wizard-modal .gg-wizard-hidden{display:none!important}
-#order.gg-wizard-modal .gg-wizard-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
-#order.gg-wizard-modal .gg-wizard-controls button,.gg-wizard-launch{border:0;border-radius:99px;padding:13px 22px;background:#0b477b;color:#fff;font-weight:800;cursor:pointer}
+#order.gg-wizard-modal .gg-wizard-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:23px;padding-top:16px;border-top:1px solid var(--wiz-line)}
+#order.gg-wizard-modal .gg-wizard-controls button,.gg-wizard-launch{border:1px solid #e2c486;border-radius:10px;padding:12px 20px;background:linear-gradient(135deg,#e7cb8c,#c9a25d);color:#192023;font-weight:800;cursor:pointer;box-shadow:0 8px 24px #0003}
 #order.gg-wizard-modal .gg-wizard-controls button:disabled{opacity:.45;cursor:not-allowed}
-#order.gg-wizard-modal .gg-wizard-controls .gg-back{background:#e9f1f7;color:#10364f}
-#order.gg-wizard-modal .gg-wizard-close{position:absolute;right:16px;top:12px;border:0;background:#e9f1f7;border-radius:50%;height:38px;width:38px;font-size:24px;cursor:pointer}
-#order.gg-wizard-modal .gg-wizard-progress{height:6px;background:#e6edf4;border-radius:8px;overflow:hidden;margin:18px 0}
-#order.gg-wizard-modal .gg-wizard-progress>div{height:100%;background:#e4b85f;transition:width .2s}
+#order.gg-wizard-modal .gg-wizard-controls .gg-back{background:#102632;color:#d7e0e2;border-color:#34505e;box-shadow:none}
+#order.gg-wizard-modal #gg-wizard-counter{color:var(--wiz-muted);font-size:12px;font-variant-numeric:tabular-nums}
+#order.gg-wizard-modal .gg-wizard-close{position:absolute;right:22px;top:22px;border:1px solid #35505d;background:#102632;color:#f1f4f4;border-radius:50%;height:38px;width:38px;font-size:24px;cursor:pointer}
+#order.gg-wizard-modal .gg-wizard-progress{height:5px;background:#203743;border-radius:9px;overflow:hidden;margin:17px 0 21px}
+#order.gg-wizard-modal .gg-wizard-progress>div{height:100%;background:linear-gradient(90deg,#c29c5b,#f0d69a);transition:width .25s}
 #order.gg-wizard-modal #add-item,#order.gg-wizard-modal #download-order,#order.gg-wizard-modal [type=submit]{display:none!important}
-#order.gg-wizard-modal .gg-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-#order.gg-wizard-modal .gg-fields label{min-width:0}
-#order.gg-wizard-modal input,#order.gg-wizard-modal select,#order.gg-wizard-modal textarea{max-width:100%}
+#order.gg-wizard-modal .gg-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 15px}
+#order.gg-wizard-modal .gg-fields label{min-width:0;color:#b3c1c7;font-size:12px;line-height:1.5}
+#order.gg-wizard-modal input,#order.gg-wizard-modal select,#order.gg-wizard-modal textarea{max-width:100%;width:100%;padding:12px 13px;border:1px solid #304956;border-radius:9px;background:#091923;color:#eff4f4;font:inherit;box-shadow:none}
+#order.gg-wizard-modal input:focus,#order.gg-wizard-modal select:focus,#order.gg-wizard-modal textarea:focus{outline:2px solid #d9b875;outline-offset:1px;border-color:#d9b875}
+#order.gg-wizard-modal input::placeholder,#order.gg-wizard-modal textarea::placeholder{color:#748994}
+#order.gg-wizard-modal .gg-wizard-native-select{display:none!important}
+#order.gg-wizard-modal .gg-type-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+#order.gg-wizard-modal .gg-type-choice{display:flex;min-height:92px;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px!important;text-align:left;background:#0d202c!important;border:1px solid #2e4754!important;border-radius:11px!important;color:#c7d2d6!important;box-shadow:none!important;font-size:12px;line-height:1.35}
+#order.gg-wizard-modal .gg-type-choice:hover{background:#132b38!important;border-color:#8c7449!important}
+#order.gg-wizard-modal .gg-type-choice.selected{border-color:var(--wiz-gold)!important;background:linear-gradient(145deg,#1b3038,#13242c)!important;color:#f4e7c9!important;box-shadow:inset 0 0 0 1px #d9b87533!important}
+#order.gg-wizard-modal .gg-type-icon{display:grid;width:28px;height:28px;place-items:center;border:1px solid #52616a;border-radius:8px;color:var(--wiz-gold);font-size:15px}
+#order.gg-wizard-modal .gg-type-choice.selected .gg-type-icon{border-color:#d9b875;color:#f1d79c}
+#order.gg-wizard-modal .gg-preview{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+#order.gg-wizard-modal .gg-preview img{width:82px;height:66px;object-fit:cover;border:1px solid #38515d;border-radius:8px}
+#order.gg-wizard-modal input[type=file]::file-selector-button{margin-right:12px;padding:9px 12px;border:1px solid #475b64;border-radius:7px;background:#162c37;color:#e6d09e;cursor:pointer}
+#order.gg-wizard-modal .gg-consent{display:flex!important;align-items:flex-start;gap:9px;color:#aab9bf;font-size:11px;line-height:1.6;margin:16px 0}
+#order.gg-wizard-modal .gg-consent input{width:auto;accent-color:#d8b675;margin-top:3px}
+#order.gg-wizard-modal #connection-note,#order.gg-wizard-modal #order-status{color:#9fb1ba;font-size:12px;line-height:1.6}
+#order.gg-wizard-modal #order-status:not(:empty){padding:10px 12px;border:1px solid #315145;border-radius:8px;background:#102821;color:#a9dfc1}
+#order.gg-wizard-modal #gg-wizard-summary{margin-top:13px}
+#order.gg-wizard-modal #gg-wizard-summary>h3{color:#d9b875;font-size:12px;letter-spacing:.04em}
+#order.gg-wizard-modal .gg-wizard-summary-row{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;margin:8px 0;background:#0c1c27;border:1px solid #263e4b;border-radius:9px;color:#c4d0d4;font-size:12px}
+#order.gg-wizard-modal .gg-wizard-summary-row strong{color:#f0e3c4}
+#order.gg-wizard-modal .gg-wizard-choice-actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+#order.gg-wizard-modal .gg-wizard-choice-actions .gg-wizard-launch{margin:0}
+#order.gg-wizard-modal .gg-wizard-choice-actions .gg-wizard-secondary{background:#102632;border-color:#34505e;color:#d7e0e2;box-shadow:none}
+#order.gg-wizard-modal .gg-item button:not(.gg-type-choice){background:#172d38;color:#c7d3d7;border:1px solid #314c58;border-radius:8px;padding:8px 12px;box-shadow:none}
 .gg-wizard-launch{display:inline-block;margin-top:12px}
-@media(max-width:600px){#order.gg-wizard-modal>.wrap{padding:25px 16px!important}#order.gg-wizard-modal .gg-fields{grid-template-columns:1fr}}
+@media(max-width:600px){#order.gg-wizard-modal{padding:8px!important}#order.gg-wizard-modal>.wrap{max-height:calc(100dvh - 16px);padding:24px 16px!important;border-radius:16px}#order.gg-wizard-modal .gg-fields{grid-template-columns:1fr}#order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#order.gg-wizard-modal .gg-type-choice{min-height:78px;padding:10px!important}#order.gg-wizard-modal #gg-wizard-heading{font-size:18px}}
 </style>
 <script id="gg-wizard-integration">
 (()=>{let ready=false,step=0,selected=0;
@@ -435,14 +465,42 @@ const back=q('.gg-back',controls),next=q('.gg-next',controls);
 const contact=q('.gg-fields',form),consent=q('.gg-consent',form),note=q('#connection-note',form),status=q('#order-status',form);
 const labels=()=>all('.gg-fields>label',items.children[selected]);
 function setVisibility(el,visible){if(el)el.classList.toggle('gg-wizard-hidden',!visible)}
+const typeIcons=['▣','▰','◇','⌑','＋'];
+function mountTypeChoices(field){
+ if(!field)return;
+ const select=q('select[name="type"]',field);
+ if(!select)return;
+ select.classList.add('gg-wizard-native-select');
+ let group=q('.gg-type-choices',field);
+ if(!group){
+  group=document.createElement('div');group.className='gg-type-choices';group.setAttribute('role','group');group.setAttribute('aria-label','კონსტრუქციის ტიპი');
+  [...select.options].filter(option=>option.value).forEach((option,index)=>{
+   const button=document.createElement('button');button.type='button';button.className='gg-type-choice';button.dataset.value=option.value;button.setAttribute('aria-pressed','false');
+   const icon=document.createElement('span');icon.className='gg-type-icon';icon.setAttribute('aria-hidden','true');icon.textContent=typeIcons[index]||'◇';
+   const title=document.createElement('span');title.textContent=option.textContent;
+   button.append(icon,title);button.addEventListener('click',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));syncTypeChoices(field)});group.append(button);
+  });
+  select.insertAdjacentElement('afterend',group);
+ }
+ syncTypeChoices(field);
+}
+function syncTypeChoices(field){
+ const select=q('select[name="type"]',field),group=q('.gg-type-choices',field);
+ group?.querySelectorAll('.gg-type-choice').forEach(button=>{
+  const selected=button.dataset.value===select?.value;
+  button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));
+ });
+}
+const escapeHtml=value=>{const el=document.createElement('span');el.textContent=String(value??'');return el.innerHTML};
 function render(){
 const fields=all('.gg-item',items);selected=Math.min(selected,fields.length-1);
 fields.forEach((f,i)=>setVisibility(f,step<=3&&i===selected));
 setVisibility(contact,step===5);setVisibility(consent,step===5);setVisibility(note,step===5);setVisibility(status,step===5);
+if(step===0)mountTypeChoices(fields[selected]);
 const labs=labels();labs.forEach((l,i)=>setVisibility(l,step===0?i===0:step===1?[2,3,4].includes(i):step===2?[1,6].includes(i):step===3?i===5:false));
 let summary=q('#gg-wizard-summary',form);if(!summary){summary=document.createElement('div');summary.id='gg-wizard-summary';items.after(summary)}
 summary.hidden=step!==4&&step!==5;
-if(!summary.hidden)summary.innerHTML='<h3>შეკვეთის კონსტრუქციები</h3>'+fields.map((f,i)=>{const get=n=>q('[name='+n+']',f)?.value||'';return '<div style="padding:12px;margin:8px 0;background:#f3f7fa;border-radius:12px"><b>#'+(i+1)+' '+get('type')+'</b> — '+get('width')+' × '+get('height')+' მმ · '+get('quantity')+' ცალი</div>'}).join('')+(step===4?'<p>გსურთ კიდევ ერთი კონსტრუქციის დამატება?</p><div style="display:flex;gap:12px;flex-wrap:wrap"><button type="button" id="gg-wizard-add" class="gg-wizard-launch">＋ დიახ, დამატება</button><button type="button" id="gg-wizard-finish" class="gg-wizard-launch">არა, დასრულება →</button></div>':'');
+if(!summary.hidden)summary.innerHTML='<h3>შეკვეთის კონსტრუქციები</h3>'+fields.map((f,i)=>{const get=n=>q('[name='+n+']',f)?.value||'';return '<div class="gg-wizard-summary-row"><strong>#'+(i+1)+' '+escapeHtml(get('type'))+'</strong><span>'+escapeHtml(get('width'))+' × '+escapeHtml(get('height'))+' მმ · '+escapeHtml(get('quantity'))+' ცალი</span></div>'}).join('')+(step===4?'<p>გსურთ კიდევ ერთი კონსტრუქციის დამატება?</p><div class="gg-wizard-choice-actions"><button type="button" id="gg-wizard-add" class="gg-wizard-launch">＋ დიახ, დამატება</button><button type="button" id="gg-wizard-finish" class="gg-wizard-launch gg-wizard-secondary">არა, დასრულება →</button></div>':'');
 q('#gg-wizard-add',summary)?.addEventListener('click',()=>{q('#add-item').click();selected=items.children.length-1;step=0;render()});
 q('#gg-wizard-finish',summary)?.addEventListener('click',()=>{step=5;render()});
 const names=['აირჩიეთ კონსტრუქციის ტიპი','მიუთითეთ ზომები და რაოდენობა','მასალა და დამატებითი დეტალები','ფოტოები ან ესკიზები','კიდევ ერთი კონსტრუქცია?','საკონტაქტო ინფორმაცია'];
