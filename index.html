@@ -438,6 +438,7 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
 #order.gg-wizard-modal .gg-preview img{width:82px;height:66px;object-fit:cover;border:1px solid #38515d;border-radius:8px}
 #order.gg-wizard-modal input[type=file]::file-selector-button{margin-right:12px;padding:9px 12px;border:1px solid #475b64;border-radius:7px;background:#162c37;color:#e6d09e;cursor:pointer}
 #order.gg-wizard-modal .gg-consent{display:flex!important;align-items:flex-start;gap:9px;color:#aab9bf;font-size:11px;line-height:1.6;margin:16px 0}
+#order.gg-wizard-modal .gg-consent[hidden]{display:none!important}
 #order.gg-wizard-modal .gg-consent input{width:auto;accent-color:#d8b675;margin-top:3px}
 #order.gg-wizard-modal #connection-note,#order.gg-wizard-modal #order-status{color:#9fb1ba;font-size:12px;line-height:1.6}
 #order.gg-wizard-modal #order-status:not(:empty){padding:10px 12px;border:1px solid #315145;border-radius:8px;background:#102821;color:#a9dfc1}
@@ -466,7 +467,7 @@ const controls=document.createElement('div');controls.className='gg-wizard-contr
 const back=q('.gg-back',controls),next=q('.gg-next',controls);
 const contact=q('.gg-fields',form),consent=q('.gg-consent',form),note=q('#connection-note',form),status=q('#order-status',form);
 const labels=()=>all('.gg-fields>label',items.children[selected]);
-function setVisibility(el,visible){if(el)el.classList.toggle('gg-wizard-hidden',!visible)}
+function setVisibility(el,visible){if(el){el.classList.toggle('gg-wizard-hidden',!visible);el.hidden=!visible}}
 const typeIcons=['▣','▰','◇','⌑','＋'];
 function mountTypeChoices(field){
  if(!field)return;
