@@ -74,8 +74,16 @@ a:focus-visible,button:focus-visible{outline:2px solid #e2c17c;outline-offset:5p
 .gg-project-dialog .project-dialog-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:clamp(24px,4vw,54px);align-items:center}
 .gg-project-dialog .project-dialog-gallery{min-width:0}
 .gg-project-dialog .project-dialog-no-photo{display:grid;place-items:center;min-height:300px;aspect-ratio:1.12;border:1px dashed #ffffff30;border-radius:13px;background:linear-gradient(145deg,#152936,#091319);color:#9baab1;font-size:14px}
-.gg-project-dialog .project-dialog-gallery img{display:block;width:100%;max-height:calc(88dvh - 56px);aspect-ratio:1.12;object-fit:cover;margin:0;border-radius:13px}
-.gg-project-dialog .project-dialog-gallery img+img{margin-top:10px}
+.gg-project-dialog .project-carousel{position:relative;overflow:hidden;border:1px solid #ffffff1c;border-radius:14px;background:#061017;touch-action:pan-y;isolation:isolate}
+.gg-project-dialog .project-carousel>img{display:block;width:100%;max-height:calc(88dvh - 56px);aspect-ratio:1.12;object-fit:cover;margin:0;border-radius:13px;transition:opacity .22s ease,transform .35s ease;user-select:none}
+.gg-project-dialog .project-carousel>img.is-changing{opacity:.45;transform:scale(1.015)}
+.gg-project-dialog .project-carousel-arrow{position:absolute;top:50%;display:grid;place-items:center;width:48px;height:48px;margin:0;padding:0;transform:translateY(-50%);border:1px solid #ffffff4c;border-radius:50%;background:#07131bb8;color:#fff;font-size:21px;line-height:1;backdrop-filter:blur(12px);box-shadow:0 8px 24px #0005;cursor:pointer;transition:background .2s,border-color .2s,scale .2s}
+.gg-project-dialog .project-carousel-arrow:hover{background:#d2b06fe8;border-color:#e4cc9b;color:#0a1115;scale:1.06}
+.gg-project-dialog .project-carousel-prev{left:16px}.gg-project-dialog .project-carousel-next{right:16px}
+.gg-project-dialog .project-carousel-count{position:absolute;top:16px;right:16px;padding:7px 11px;border:1px solid #ffffff2b;border-radius:999px;background:#061017a8;color:#f7f4ed;font-size:11px;letter-spacing:.11em;backdrop-filter:blur(10px)}
+.gg-project-dialog .project-carousel-dots{position:absolute;bottom:15px;left:50%;display:flex;gap:7px;transform:translateX(-50%);padding:8px 11px;border:1px solid #ffffff24;border-radius:999px;background:#0610179c;backdrop-filter:blur(10px)}
+.gg-project-dialog .project-carousel-dot{width:7px;height:7px;margin:0;padding:0;border:0;border-radius:999px;background:#f5f3ed80;cursor:pointer;transition:width .2s,background .2s}
+.gg-project-dialog .project-carousel-dot[aria-current=true]{width:22px;background:#e2c17c}
 .gg-project-dialog .project-dialog-copy{padding:38px 28px 38px 0}
 .gg-project-dialog .project-dialog-type{display:inline-flex;margin:0 0 20px;padding:8px 13px;border:1px solid #c6a36370;border-radius:999px;color:#dfc17f;font-size:12px;letter-spacing:.04em}
 .gg-project-dialog h2{margin:0 0 16px;color:#f8f7f3;font-size:clamp(28px,3vw,42px);line-height:1.2;letter-spacing:-.03em}
@@ -86,7 +94,8 @@ a:focus-visible,button:focus-visible{outline:2px solid #e2c17c;outline-offset:5p
 .gg-project-dialog .project-dialog-meta small{color:#84959e;font-size:11px}
 .gg-project-dialog .project-dialog-meta strong{color:#f1eee6;font-size:13px;font-weight:500}
 @media(max-width:760px){.gg-project-dialog{width:calc(100vw - 24px);max-height:92dvh;padding:12px;border-radius:17px}.gg-project-dialog .project-dialog-close{right:20px;top:20px;width:38px;height:38px}.gg-project-dialog .project-dialog-layout{grid-template-columns:1fr;gap:0}.gg-project-dialog .project-dialog-gallery img{max-height:38dvh;aspect-ratio:1.55}.gg-project-dialog .project-dialog-copy{padding:23px 12px 15px}.gg-project-dialog .project-dialog-type{margin-bottom:13px}.gg-project-dialog h2{font-size:27px}.gg-project-dialog .project-dialog-description{font-size:14px}.gg-project-dialog .project-dialog-meta{margin-top:20px;padding-top:15px}}
-#order.gg-wizard-modal,.gg-modal{color:#102c43}
+@media(prefers-reduced-motion:reduce){.gg-project-dialog .project-carousel>img,.gg-project-dialog .project-carousel-arrow,.gg-project-dialog .project-carousel-dot{transition:none}}
+#order.gg-wizard-modal,.gg-modal:not(.gg-project-dialog){color:#102c43}
 html #gg-chat-teaser{display:none}
 html #gg-chat-toggle{background:#10232c;color:#e3c17e;border:1px solid #ad8d56;animation:none;box-shadow:0 5px 20px #0005}
 html #gg-chat-toggle:before,html #gg-chat-toggle:after{display:none}

@@ -26,13 +26,26 @@ if(!$('#login')){
  const gallery=el('div',undefined,$('#projects .wrap'));gallery.className='gg-gallery';const filters=el('div',undefined,$('#projects .wrap'));filters.className='gg-filter';gallery.before(filters);
  const dialog=el('dialog',undefined,document.body);dialog.className='gg-modal gg-project-dialog';
  dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+ dialog.addEventListener('keydown',e=>{if(!dialog.open)return;if(e.key==='ArrowLeft'){const b=$('.project-carousel-prev',dialog);if(b){e.preventDefault();b.click()}}if(e.key==='ArrowRight'){const b=$('.project-carousel-next',dialog);if(b){e.preventDefault();b.click()}}});
  function openProject(p){
   dialog.replaceChildren();
   const close=el('button','×',dialog);close.type='button';close.className='project-dialog-close';close.setAttribute('aria-label','დახურვა');close.onclick=()=>dialog.close();
   const layout=el('div',undefined,dialog);layout.className='project-dialog-layout';
   const photosBox=el('div',undefined,layout);photosBox.className='project-dialog-gallery';
-  if(p.photos?.length)p.photos.forEach(src=>{const img=el('img',undefined,photosBox);img.src=src;img.alt=p.title||'პროექტის ფოტო'});
-  else{const blank=el('div','ფოტო არ არის დამატებული',photosBox);blank.className='project-dialog-no-photo'}
+  const images=Array.isArray(p.photos)?p.photos:[];
+  if(images.length){
+   const carousel=el('div',undefined,photosBox);carousel.className='project-carousel';
+   const image=el('img',undefined,carousel);image.src=images[0];image.alt=(p.title||'პროექტის ფოტო')+' — ფოტო 1';image.draggable=false;
+   if(images.length>1){
+    let current=0;const count=el('span',`01 / ${String(images.length).padStart(2,'0')}`,carousel);count.className='project-carousel-count';
+    const dots=el('div',undefined,carousel);dots.className='project-carousel-dots';
+    const indicators=images.map((_,i)=>{const dot=el('button',undefined,dots);dot.type='button';dot.className='project-carousel-dot';dot.setAttribute('aria-label',`ფოტო ${i+1}`);dot.setAttribute('aria-current',i===0?'true':'false');dot.onclick=()=>show(i);return dot});
+    function show(index){current=(index+images.length)%images.length;image.classList.add('is-changing');image.src=images[current];image.alt=(p.title||'პროექტის ფოტო')+` — ფოტო ${current+1}`;count.textContent=`${String(current+1).padStart(2,'0')} / ${String(images.length).padStart(2,'0')}`;indicators.forEach((dot,i)=>dot.setAttribute('aria-current',i===current?'true':'false'));requestAnimationFrame(()=>image.classList.remove('is-changing'))}
+    const previous=el('button','←',carousel);previous.type='button';previous.className='project-carousel-arrow project-carousel-prev';previous.setAttribute('aria-label','წინა ფოტო');previous.onclick=()=>show(current-1);
+    const next=el('button','→',carousel);next.type='button';next.className='project-carousel-arrow project-carousel-next';next.setAttribute('aria-label','შემდეგი ფოტო');next.onclick=()=>show(current+1);
+    let startX=null;carousel.addEventListener('pointerdown',e=>{startX=e.clientX});carousel.addEventListener('pointerup',e=>{if(startX!==null&&Math.abs(e.clientX-startX)>45)show(current+(e.clientX<startX?1:-1));startX=null});carousel.addEventListener('pointercancel',()=>startX=null);
+   }
+  }else{const blank=el('div','ფოტო არ არის დამატებული',photosBox);blank.className='project-dialog-no-photo'}
   const copy=el('div',undefined,layout);copy.className='project-dialog-copy';
   el('span',p.type||p.category||'პროექტი',copy).className='project-dialog-type';
   el('h2',p.title,copy);

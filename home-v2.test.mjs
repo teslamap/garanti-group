@@ -20,3 +20,14 @@ test('CMS excludes wizard markup and preserves legacy positions plus explicit V2
   assert.equal(result['v2-headline'], 'V2 headline');
   assert.equal(result['text-2'], 'Legacy paragraph');
 });
+
+test('project detail photos render as one keyboard and arrow navigable carousel', () => {
+  const source = readFileSync(new URL('./upgrade.js', import.meta.url), 'utf8');
+  assert.match(source, /className='project-carousel'/);
+  assert.match(source, /project-carousel-prev/);
+  assert.match(source, /project-carousel-next/);
+  assert.match(source, /project-carousel-dots/);
+  assert.match(source, /e\.key==='ArrowLeft'/);
+  assert.match(source, /e\.key==='ArrowRight'/);
+  assert.doesNotMatch(source, /პროექტის დეტალები/);
+});
