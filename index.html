@@ -407,7 +407,7 @@ render();
 #order.gg-wizard-modal>.wrap>h2{color:var(--wiz-text);font-size:22px;letter-spacing:-.03em;margin:0 45px 7px 0}
 #order.gg-wizard-modal>.wrap>p.gg-note:not(#connection-note){color:var(--wiz-muted);font-size:12px;line-height:1.65;margin:0 0 16px;max-width:62ch}
 #order.gg-wizard-modal #gg-wizard-heading{color:var(--wiz-text);font-size:20px;letter-spacing:-.025em;margin:0 0 17px}
-#order.gg-wizard-modal .gg-form{max-width:none;margin:0}
+#order.gg-wizard-modal .gg-form{max-width:none;margin:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none}
 #order.gg-wizard-modal .gg-item{border:0;padding:0;margin:0}
 #order.gg-wizard-modal .gg-item legend{color:var(--wiz-muted);font-weight:700;margin-bottom:14px}
 #order.gg-wizard-modal .gg-wizard-hidden{display:none!important}
@@ -494,7 +494,7 @@ function syncTypeChoices(field){
 const escapeHtml=value=>{const el=document.createElement('span');el.textContent=String(value??'');return el.innerHTML};
 function render(){
 const fields=all('.gg-item',items);selected=Math.min(selected,fields.length-1);
-fields.forEach((f,i)=>setVisibility(f,step<=3&&i===selected));
+fields.forEach((f,i)=>{setVisibility(f,step<=3&&i===selected);const remove=q('.gg-item > button',f);if(remove)remove.hidden=fields.length<2});
 setVisibility(contact,step===5);setVisibility(consent,step===5);setVisibility(note,step===5);setVisibility(status,step===5);
 if(step===0)mountTypeChoices(fields[selected]);
 const labs=labels();labs.forEach((l,i)=>setVisibility(l,step===0?i===0:step===1?[2,3,4].includes(i):step===2?[1,6].includes(i):step===3?i===5:false));
@@ -507,7 +507,7 @@ const names=['აირჩიეთ კონსტრუქციის ტი�
 heading.textContent=names[step];q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-progress>div',root).style.width=((step+1)/6*100)+'%';
 back.disabled=step===0;next.hidden=step===4;next.textContent=step===5?'შეკვეთის გაგზავნა ✓':'შემდეგი →';
 }
-function open(e){e?.preventDefault();root.classList.add('gg-open');document.body.style.overflow='hidden';step=0;selected=0;render();close.focus()}
+function open(e){e?.preventDefault();step=0;selected=0;root.scrollTop=0;wrap.scrollTop=0;root.classList.add('gg-open');document.body.style.overflow='hidden';render();requestAnimationFrame(()=>{root.scrollTop=0;wrap.scrollTop=0});close.focus()}
 function shut(){root.classList.remove('gg-open');document.body.style.overflow=''}
 close.onclick=shut;root.addEventListener('click',e=>{if(e.target===root)shut()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.contains('gg-open'))shut()});
 back.onclick=()=>{if(step===5)step=4;else step=Math.max(0,step-1);render()};
