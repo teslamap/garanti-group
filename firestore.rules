@@ -30,7 +30,7 @@ service cloud.firestore {
   function validPhoto(p,owner,id,item,number) { return p is string && p == 'orders/'+owner+'/'+id+'/'+item+'/'+number; }
   function validItem(d,owner,id,item) {
    return d.keys().hasAll(['type','material','width','height','quantity','notes','photos']) && d.keys().hasOnly(['type','material','width','height','quantity','notes','photos'])
-    && d.type in ['ფანჯარა','კარი','ვიტრაჟი','მოაჯირი','სხვა'] && d.material in ['PVC','ალუმინი','მინა']
+    && d.type in ['კარ-ფანჯარა','მინის მოაჯირი','საშხაპე კაბინა','მინის ფასადი','მინის ტიხარი','სხვა','ფანჯარა','კარი','ვიტრაჟი','მოაჯირი'] && d.material in ['PVC','ალუმინი','მინა']
     && d.width is int && d.width >= 1 && d.width <= 20000 && d.height is int && d.height >= 1 && d.height <= 20000
     && d.quantity is int && d.quantity >= 1 && d.quantity <= 100 && shortText(d.notes,0,1000)
     && d.photos is list && d.photos.size() <= 3

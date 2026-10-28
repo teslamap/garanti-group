@@ -396,7 +396,7 @@ render();
 <button id="gg-chat-toggle" type="button" aria-label="AI ასისტენტის გახსნა" aria-controls="gg-chat-panel" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> AI ასისტენტი</button>
 <section id="gg-chat-panel" aria-label="AI ჩატი" aria-hidden="true"><div class="gg-chat-head"><div><strong>გარანტი ჯგუფი · AI ასისტენტი</strong><small>რით შეგვიძლია დაგეხმაროთ?</small></div><button class="gg-chat-close" type="button" aria-label="დახურვა">×</button></div><div id="gg-chat-messages" role="log" aria-live="polite"><div class="gg-bubble gg-bot">გამარჯობა! 👋 დაგეხმარებით ალუმინის, მინისა და მეტალოპლასტმასის კონსტრუქციების შესახებ კითხვებზე.</div></div><div class="gg-chat-quick"><button type="button" data-question="რა მომსახურებას სთავაზობთ მომხმარებლებს?">მომსახურება</button><button type="button" data-question="როგორ მივიღო ფასის შეთავაზება?">ფასის შეთავაზება</button><button type="button" data-question="როგორ დაგიკავშირდეთ?">კონტაქტი</button></div><form class="gg-chat-form" id="gg-chat-form"><input id="gg-chat-input" maxlength="1500" autocomplete="off" placeholder="დაწერეთ შეკითხვა..." aria-label="შეტყობინება" required><button id="gg-chat-send" type="submit">➤</button></form><div class="gg-chat-foot"><span id="gg-inquiry-status" role="status"></span><br>კომერციული მოთხოვნის მიმოწერა და მითითებული ტელეფონი გადაეცემა კომპანიის ადმინისტრატორს.<br>AI-ის პასუხები გადაამოწმეთ კონსულტანტთან · <button type="button" id="gg-chat-reset">თავიდან დაწყება</button></div></section>
 <script src="chat-widget.js?v=ai-20261027" defer></script>
-<script src="site-config.js?v=ai-20261027"></script><script src="upgrade.js?v=project-carousel-20261028" defer></script>
+<script src="site-config.js?v=ai-20261027"></script><script src="upgrade.js?v=order-wizard-photo-20261028" defer></script>
 
 <style id="gg-wizard-style">
 #gw-open,#gw-overlay{display:none!important}
@@ -452,6 +452,61 @@ body.gg-wizard-open #gg-chat-toggle,body.gg-wizard-open #gg-chat-panel{display:n
 #order.gg-wizard-modal .gg-item button:not(.gg-type-choice){background:#172d38;color:#c7d3d7;border:1px solid #314c58;border-radius:8px;padding:8px 12px;box-shadow:none}
 .gg-wizard-launch{display:inline-block;margin-top:12px}
 @media(max-width:600px){#order.gg-wizard-modal{padding:8px!important}#order.gg-wizard-modal>.wrap{max-height:calc(100dvh - 16px);padding:21px 15px!important;border-radius:16px}#order.gg-wizard-modal .gg-fields{grid-template-columns:1fr}#order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#order.gg-wizard-modal .gg-type-choice{min-height:72px;padding:10px!important}#order.gg-wizard-modal #gg-wizard-heading{font-size:17px}}
+/* Screenshot-matched order step: cinematic rail, segmented progress and photo choices. */
+#order.gg-wizard-modal{padding:0!important;overflow:hidden}
+#order.gg-wizard-modal>.wrap{width:min(100%,820px);height:min(714px,100dvh);min-height:min(620px,100dvh);max-height:100dvh;padding:25px 24px 18px 174px!important;border-radius:12px;overflow:auto;scrollbar-width:thin;scrollbar-color:#344b58 transparent}
+#order.gg-wizard-modal>.wrap::before{content:"";position:absolute;z-index:0;inset:0 auto 0 0;width:150px;border-radius:11px 0 0 11px;background:linear-gradient(0deg,#03121dec 0%,#06162283 38%,#06162220 78%),url("assets/v2-hero.webp") center/cover no-repeat}
+#order.gg-wizard-modal>.wrap::after{content:"სანდო\A ხარისხი\A თანამედროვე\A სისტემებისთვის";white-space:pre;position:absolute;z-index:1;left:16px;bottom:79px;color:#d0d9dc;font-size:17px;line-height:1.42;font-weight:600;text-shadow:0 2px 12px #000}
+#order.gg-wizard-modal>.wrap>.kicker,#order.gg-wizard-modal>.wrap>h2,#order.gg-wizard-modal>.wrap>p.gg-note:not(#connection-note){display:none!important}
+#order.gg-wizard-modal .gg-wizard-close{z-index:5;right:14px;top:13px;width:32px;height:32px;background:#081923b8;border-color:#47606d;font-size:21px}
+#order.gg-wizard-modal .gg-wizard-progress{height:auto;display:grid;grid-template-columns:46px minmax(70px,1fr) auto;align-items:center;gap:16px;overflow:visible;margin:0 0 22px;padding:0;background:transparent;border-radius:0}
+#order.gg-wizard-modal .gg-wizard-stepbadge{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#f3d18a,#c99e55);color:#13202a;font-size:15px;font-weight:800;box-shadow:0 0 0 3px #e8c98024}
+#order.gg-wizard-modal .gg-wizard-track{height:18px;position:relative;display:flex;align-items:center;justify-content:space-between}
+#order.gg-wizard-modal .gg-wizard-progress>.gg-wizard-track{height:18px;background:transparent;border-radius:0;overflow:visible}
+#order.gg-wizard-modal .gg-wizard-track::before,#order.gg-wizard-modal .gg-wizard-fill{content:"";position:absolute;left:0;right:0;top:8px;height:2px;border-radius:2px;background:#33434e}
+#order.gg-wizard-modal .gg-wizard-fill{right:auto;background:linear-gradient(90deg,#e0b45e,#f4d493);transition:width .25s}
+#order.gg-wizard-modal .gg-wizard-track i{position:relative;z-index:1;display:block;width:7px;height:7px;border-radius:50%;background:#40515c;border:1px solid #1c2b34}
+#order.gg-wizard-modal .gg-wizard-track i.active{background:#eac477;box-shadow:0 0 0 2px #eac47735}
+#order.gg-wizard-modal .gg-wizard-stepname{color:#bec8cc;font-size:13px;white-space:nowrap}
+#order.gg-wizard-modal #gg-wizard-heading{font-size:27px;line-height:1.3;margin:0 0 7px;color:#f0f4f5}
+#order.gg-wizard-modal .gg-wizard-subtitle{margin:0 0 20px;color:#a9b7bd;font-size:17px;line-height:1.5}
+#order.gg-wizard-modal .gg-wizard-controls{margin-top:17px;padding-top:0;border-top:0;background:none}
+#order.gg-wizard-modal .gg-wizard-controls button{min-width:120px;padding:11px 18px;border-radius:9px;font-size:15px}
+#order.gg-wizard-modal .gg-wizard-controls .gg-back{background:transparent;color:#c2cdd2;border-color:#806744}
+#order.gg-wizard-modal #gg-wizard-counter{display:none}
+#order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:0}
+#order.gg-wizard-modal .gg-type-choice{position:relative;display:block;height:204px;min-height:204px;padding:0!important;overflow:hidden;text-align:center;background:#0c1c28!important;border:1px solid #344654!important;border-radius:12px!important;color:#f0f3f4!important;font-size:16px;line-height:1.25;box-shadow:none!important;isolation:isolate}
+#order.gg-wizard-modal .gg-type-choice:hover{border-color:#a99062!important;transform:translateY(-1px)}
+#order.gg-wizard-modal .gg-type-choice.selected{border:2px solid #e1bd75!important;color:#fff0ce!important;box-shadow:0 0 0 1px #e4c37865,inset 0 0 0 1px #e4c37865!important}
+#order.gg-wizard-modal .gg-type-photo{position:absolute;z-index:0;inset:0;background-image:linear-gradient(0deg,#07131ee8 0%,#07131e72 30%,transparent 65%),url("assets/order-type-sprite.png");background-repeat:no-repeat;background-size:300% 200%;transition:transform .35s;}
+#order.gg-wizard-modal .gg-type-choice:hover .gg-type-photo{transform:scale(1.035)}
+#order.gg-wizard-modal .gg-type-choice:nth-child(1) .gg-type-photo{background-position:0 0}
+#order.gg-wizard-modal .gg-type-choice:nth-child(2) .gg-type-photo{background-position:50% 0}
+#order.gg-wizard-modal .gg-type-choice:nth-child(3) .gg-type-photo{background-position:100% 0}
+#order.gg-wizard-modal .gg-type-choice:nth-child(4) .gg-type-photo{background-position:0 100%}
+#order.gg-wizard-modal .gg-type-choice:nth-child(5) .gg-type-photo{background-position:50% 100%}
+#order.gg-wizard-modal .gg-type-choice:nth-child(6) .gg-type-photo{background-position:100% 100%}
+#order.gg-wizard-modal .gg-type-label{position:absolute;inset:auto 7px 12px;z-index:1;text-shadow:0 2px 5px #000;font-weight:700}
+#order.gg-wizard-modal .gg-type-check{position:absolute;z-index:2;right:8px;top:8px;width:23px;height:23px;display:none;place-items:center;border-radius:50%;background:#efc778;color:#14202a;font-size:15px;font-weight:900}
+#order.gg-wizard-modal .gg-type-choice.selected .gg-type-check{display:grid}
+#order.gg-wizard-modal .gg-type-choice:nth-child(6) .gg-type-photo{background-image:linear-gradient(#0715238c,#0715238c),url("assets/order-type-sprite.png")}
+#order.gg-wizard-modal .gg-wizard-controls .gg-next{min-width:176px}
+@media(max-width:680px){
+ #order.gg-wizard-modal>.wrap{width:100%;height:100dvh;min-height:0;padding:142px 16px 16px!important;border-radius:0}
+ #order.gg-wizard-modal>.wrap::before{inset:0 0 auto;height:122px;width:auto;border-radius:0;background-position:center 45%}
+ #order.gg-wizard-modal>.wrap::after{display:none}
+ #order.gg-wizard-modal .gg-wizard-close{top:14px;right:14px}
+ #order.gg-wizard-modal .gg-wizard-progress{grid-template-columns:42px minmax(45px,1fr);gap:10px;margin-bottom:16px}
+ #order.gg-wizard-modal .gg-wizard-stepbadge{width:42px;height:42px;font-size:13px}
+ #order.gg-wizard-modal .gg-wizard-stepname{display:none}
+ #order.gg-wizard-modal #gg-wizard-heading{font-size:21px;margin-bottom:5px}
+ #order.gg-wizard-modal .gg-wizard-subtitle{font-size:14px;margin-bottom:14px}
+ #order.gg-wizard-modal .gg-type-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #order.gg-wizard-modal .gg-type-choice{height:150px;min-height:150px;font-size:13px}
+ #order.gg-wizard-modal .gg-wizard-controls{position:sticky;bottom:0;margin-top:14px;padding:12px 0 5px;background:linear-gradient(180deg,transparent,#081721 20%)}
+ #order.gg-wizard-modal .gg-wizard-controls button{min-width:98px;padding:10px 14px;font-size:13px}
+ #order.gg-wizard-modal .gg-wizard-controls .gg-next{min-width:130px}
+}
 </style>
 <script id="gg-wizard-integration">
 (()=>{let ready=false,step=0,selected=0;
@@ -461,14 +516,13 @@ const root=q('#order'),form=q('#order-form'),items=q('#items');
 if(ready||!root||!form||!items)return;ready=true;
 root.classList.add('gg-wizard-modal');root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label','შეკვეთის კონფიგურატორი');
 const wrap=q('.wrap',root),close=document.createElement('button');close.className='gg-wizard-close';close.type='button';close.textContent='×';close.setAttribute('aria-label','დახურვა');wrap.prepend(close);
-const progress=document.createElement('div');progress.className='gg-wizard-progress';progress.innerHTML='<div></div>';form.before(progress);
-const heading=document.createElement('h3');heading.id='gg-wizard-heading';progress.after(heading);
+const progress=document.createElement('div');progress.className='gg-wizard-progress';progress.innerHTML='<span class="gg-wizard-stepbadge"></span><div class="gg-wizard-track"><span class="gg-wizard-fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="gg-wizard-stepname"></span>';form.before(progress);
+const heading=document.createElement('h3');heading.id='gg-wizard-heading';progress.after(heading);const subtitle=document.createElement('p');subtitle.className='gg-wizard-subtitle';subtitle.textContent='აირჩიეთ თქვენთვის სასურველი ტიპი';heading.after(subtitle);
 const controls=document.createElement('div');controls.className='gg-wizard-controls';controls.innerHTML='<button type="button" class="gg-back">← უკან</button><span id="gg-wizard-counter"></span><button type="button" class="gg-next">შემდეგი →</button>';form.after(controls);
 const back=q('.gg-back',controls),next=q('.gg-next',controls);
 const contact=q('.gg-fields',form),consent=q('.gg-consent',form),note=q('#connection-note',form),status=q('#order-status',form);
 const labels=()=>all('.gg-fields>label',items.children[selected]);
 function setVisibility(el,visible){if(el){el.classList.toggle('gg-wizard-hidden',!visible);el.hidden=!visible}}
-const typeIcons=['▣','▰','◇','⌑','＋'];
 function mountTypeChoices(field){
  if(!field)return;
  const select=q('select[name="type"]',field);
@@ -479,9 +533,10 @@ function mountTypeChoices(field){
   group=document.createElement('div');group.className='gg-type-choices';group.setAttribute('role','group');group.setAttribute('aria-label','კონსტრუქციის ტიპი');
   [...select.options].filter(option=>option.value).forEach((option,index)=>{
    const button=document.createElement('button');button.type='button';button.className='gg-type-choice';button.dataset.value=option.value;button.setAttribute('aria-pressed','false');
-   const icon=document.createElement('span');icon.className='gg-type-icon';icon.setAttribute('aria-hidden','true');icon.textContent=typeIcons[index]||'◇';
-   const title=document.createElement('span');title.textContent=option.textContent;
-   button.append(icon,title);button.addEventListener('click',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));syncTypeChoices(field)});group.append(button);
+   const photo=document.createElement('span');photo.className='gg-type-photo';photo.setAttribute('aria-hidden','true');
+   const title=document.createElement('span');title.className='gg-type-label';title.textContent=option.textContent;
+   const check=document.createElement('span');check.className='gg-type-check';check.setAttribute('aria-hidden','true');check.textContent='✓';
+   button.append(photo,title,check);button.addEventListener('click',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));syncTypeChoices(field)});group.append(button);
   });
   select.insertAdjacentElement('afterend',group);
  }
@@ -507,7 +562,7 @@ if(!summary.hidden)summary.innerHTML='<h3>შეკვეთის კონს�
 q('#gg-wizard-add',summary)?.addEventListener('click',()=>{q('#add-item').click();selected=items.children.length-1;step=0;render()});
 q('#gg-wizard-finish',summary)?.addEventListener('click',()=>{step=5;render()});
 const names=['აირჩიეთ კონსტრუქციის ტიპი','მიუთითეთ ზომები და რაოდენობა','მასალა და დამატებითი დეტალები','ფოტოები ან ესკიზები','კიდევ ერთი კონსტრუქცია?','საკონტაქტო ინფორმაცია'];
-heading.textContent=names[step];q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-progress>div',root).style.width=((step+1)/6*100)+'%';
+heading.textContent=names[step];subtitle.textContent=step===0?'აირჩიეთ თქვენთვის სასურველი ტიპი':step===1?'მიუთითეთ ზომები მილიმეტრებში':'გააგრძელეთ შეკვეთის დეტალების შევსება';q('#gg-wizard-counter').textContent=(step+1)+'/6';q('.gg-wizard-stepbadge',root).textContent=(step+1)+'/6';q('.gg-wizard-stepname',root).textContent=names[step];q('.gg-wizard-fill',root).style.width=((step+1)/6*100)+'%';all('.gg-wizard-track i',root).forEach((mark,i)=>mark.classList.toggle('active',i<=step));
 back.disabled=step===0;next.hidden=step===4;next.textContent=step===5?'შეკვეთის გაგზავნა ✓':'შემდეგი →';
 }
 function open(e){e?.preventDefault();step=0;selected=0;root.scrollTop=0;wrap.scrollTop=0;root.classList.add('gg-open');document.body.classList.add('gg-wizard-open');document.body.style.overflow='hidden';render();requestAnimationFrame(()=>{root.scrollTop=0;wrap.scrollTop=0});close.focus()}

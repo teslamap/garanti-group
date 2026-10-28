@@ -4,7 +4,7 @@ const text=(x,max,min=0)=>typeof x==='string'&&x.trim().length>=min&&x.length<=m
 export function validateInquiry(body){
  if(!body||!text(body.name,100,2)||!text(body.phone,25,7)||!/^\+?[\d\s()-]{7,25}$/.test(body.phone)||!text(body.address,500)||!text(body.notes,2000)||body.consent!==true||!Array.isArray(body.items)||body.items.length<1||body.items.length>20)throw Error('შეამოწმეთ სახელი, ტელეფონი და თანხმობა.');
  let total=0;
- for(const i of body.items){if(!['ფანჯარა','კარი','ვიტრაჟი','მოაჯირი','სხვა'].includes(i.type)||!['PVC','ალუმინი','მინა'].includes(i.material)||!Number.isInteger(i.width)||i.width<1||i.width>20000||!Number.isInteger(i.height)||i.height<1||i.height>20000||!Number.isInteger(i.quantity)||i.quantity<1||i.quantity>100||!text(i.notes,1000)||!Array.isArray(i.photos)||i.photos.length>3||i.photos.some(p=>!photoData(p)))throw Error('შეამოწმეთ კონსტრუქციის ზომები და ფოტოები.');total+=i.photos.reduce((sum,p)=>sum+p.length,0)}
+ for(const i of body.items){if(!['კარ-ფანჯარა','მინის მოაჯირი','საშხაპე კაბინა','მინის ფასადი','მინის ტიხარი','სხვა','ფანჯარა','კარი','ვიტრაჟი','მოაჯირი'].includes(i.type)||!['PVC','ალუმინი','მინა'].includes(i.material)||!Number.isInteger(i.width)||i.width<1||i.width>20000||!Number.isInteger(i.height)||i.height<1||i.height>20000||!Number.isInteger(i.quantity)||i.quantity<1||i.quantity>100||!text(i.notes,1000)||!Array.isArray(i.photos)||i.photos.length>3||i.photos.some(p=>!photoData(p)))throw Error('შეამოწმეთ კონსტრუქციის ზომები და ფოტოები.');total+=i.photos.reduce((sum,p)=>sum+p.length,0)}
  if(total>15000000)throw Error('ფოტოების საერთო მოცულობა ძალიან დიდია.');
 }
 export function validateContent(data){

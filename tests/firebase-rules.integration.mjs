@@ -9,7 +9,7 @@ const env=await initializeTestEnvironment({projectId,firestore:{rules:await read
 const owner=env.authenticatedContext('owner'),other=env.authenticatedContext('other'),admin=env.authenticatedContext('admin'),publicUser=env.unauthenticatedContext();
 await env.withSecurityRulesDisabled(async c=>{await setDoc(doc(c.firestore(),'admins','admin'),{active:true})});
 const orderId='Abcdefghijklmnopqr01';
-const item={type:'ფანჯარა',material:'PVC',width:1000,height:1500,quantity:2,notes:'',photos:['orders/owner/'+orderId+'/0/0']};
+const item={type:'კარ-ფანჯარა',material:'PVC',width:1000,height:1500,quantity:2,notes:'',photos:['orders/owner/'+orderId+'/0/0']};
 const header=()=>({ownerUid:'owner',name:'Test customer',phone:'+995555123456',address:'Tbilisi',notes:'',consent:true,itemCount:1,createdAt:serverTimestamp(),submittedAt:null,status:'მზადდება'});
 test('rules validate marketing scope, immutable roles and bounded order reservation',async()=>{
  assert.ok(owner.firestore());
